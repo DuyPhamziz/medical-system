@@ -1,0 +1,276 @@
+CREATE TABLE role (
+    role_id VARCHAR(64) PRIMARY KEY,
+    role_name VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE user_account (
+    user_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    username VARCHAR(50) UNIQUE NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    role_id VARCHAR(64) REFERENCES role(role_id)
+);
+CREATE TABLE organization (
+    org_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(255),
+    type VARCHAR(50),
+    email VARCHAR(100),
+    phone VARCHAR(20),
+    address TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE organization_member (
+    member_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    role VARCHAR(50),
+    status VARCHAR(50),
+    org_id UUID REFERENCES organization(org_id),
+    user_id UUID REFERENCES user_account(user_id)
+);
+CREATE TABLE doctor (
+    doctor_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    full_name VARCHAR(255),
+    user_id UUID REFERENCES user_account(user_id)
+);
+
+CREATE TABLE patient (
+    patient_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    full_name VARCHAR(255),
+    date_of_birth DATE,
+    gender VARCHAR(20),
+    biological_gender VARCHAR(20),
+    psychological_gender VARCHAR(20),
+    phone VARCHAR(20),
+    address TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    user_id UUID REFERENCES user_account(user_id)
+);
+CREATE TABLE family_member (
+    family_member_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+    patient_id UUID REFERENCES patient(patient_id), 
+    -- NULL nếu người này không phải bệnh nhân (ví dụ ông bà đã mất)
+
+    full_name VARCHAR(255) NOT NULL,
+    gender VARCHAR(20),
+    year_of_birth INT,
+
+    is_patient BOOLEAN DEFAULT FALSE
+);
+CREATE TABLE family_relationship (
+    relationship_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+    person_id UUID REFERENCES family_member(family_member_id),
+    related_person_id UUID REFERENCES family_member(family_member_id),
+
+    relationship_type VARCHAR(50),
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE family_member_disease (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+    family_member_id UUID REFERENCES family_member(family_member_id),
+
+    disease_name VARCHAR(255),
+
+    diagnosed_year INT,
+
+    note TEXT
+);
+
+CREATE TABLE clinic (
+    clinic_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(255),
+    address TEXT,
+    phone VARCHAR(20)
+);
+
+CREATE TABLE room (
+    room_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(255),
+    type VARCHAR(50),
+    clinic_id UUID REFERENCES clinic(clinic_id)
+);
+CREATE TABLE appointment (
+    appointment_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    start_time TIMESTAMP,
+    end_time TIMESTAMP,
+    reason TEXT,
+    status VARCHAR(50),
+    doctor_id UUID REFERENCES doctor(doctor_id),
+    patient_id UUID REFERENCES patient(patient_id),
+    room_id UUID REFERENCES room(room_id)
+);
+
+CREATE TABLE visit (
+    visit_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    start_time TIMESTAMP,
+    end_time TIMESTAMP,
+    reason TEXT,
+    preliminary_diagnosis TEXT,
+    note TEXT,
+    doctor_id UUID REFERENCES doctor(doctor_id),
+    room_id UUID REFERENCES room(room_id)
+);
+CREATE TABLE medication (
+    medication_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(255),
+    unit VARCHAR(50)
+);
+
+CREATE TABLE prescription (
+    prescription_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    created_at TIMESTAMP,
+    note TEXT,
+    visit_id UUID REFERENCES visit(visit_id)
+);
+
+CREATE TABLE prescription_detail (
+    medication_id UUID REFERENCES medication(medication_id),
+    prescription_id UUID REFERENCES prescription(prescription_id),
+    dosage VARCHAR(100),
+    frequency VARCHAR(100),
+    duration VARCHAR(100),
+    PRIMARY KEY (medication_id, prescription_id)
+);
+
+CREATE TABLE service (
+    service_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(255),
+    description TEXT,
+    price NUMERIC,
+    type VARCHAR(50)
+);
+
+CREATE TABLE invoice (
+    invoice_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    total_amount NUMERIC,
+    status VARCHAR(50),
+    created_at TIMESTAMP,
+    visit_id UUID REFERENCES visit(visit_id)
+);
+
+CREATE TABLE invoice_detail (
+    detail_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    quantity INT,
+    unit_price NUMERIC,
+    service_id UUID REFERENCES service(service_id),
+    invoice_id UUID REFERENCES invoice(invoice_id)
+);
+
+CREATE TABLE form_type (
+    form_type_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(255)
+);
+
+CREATE TABLE form (
+    form_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    title VARCHAR(255),
+    description TEXT,
+    is_template BOOLEAN,
+    is_active BOOLEAN,
+    is_paid BOOLEAN,
+    price NUMERIC,
+    created_at TIMESTAMP,
+    updated_at TIMESTAMP,
+    user_id UUID REFERENCES user_account(user_id)
+);
+
+CREATE TABLE section (
+    section_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    title VARCHAR(255),
+    description TEXT,
+    order_index INT,
+    form_id UUID REFERENCES form(form_id)
+);
+
+CREATE TABLE question_type (
+    question_type_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(255)
+);
+
+CREATE TABLE question (
+    question_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    content TEXT,
+    is_required BOOLEAN,
+    order_index INT,
+    allow_skip BOOLEAN,
+    allow_repeat BOOLEAN,
+    max_repeat INT,
+    score NUMERIC,
+    hint TEXT,
+    min_value NUMERIC,
+    max_value NUMERIC,
+    min_length INT,
+    max_length INT,
+    placeholder TEXT,
+    question_type_id UUID REFERENCES question_type(question_type_id)
+);
+
+CREATE TABLE section_question (
+    question_id UUID REFERENCES question(question_id),
+    section_id UUID REFERENCES section(section_id),
+    order_index INT,
+    PRIMARY KEY (question_id, section_id)
+);
+
+CREATE TABLE answer_session (
+    session_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    start_time TIMESTAMP,
+    submit_time TIMESTAMP,
+    status VARCHAR(50),
+    patient_id UUID REFERENCES patient(patient_id),
+    form_id UUID REFERENCES form(form_id),
+    visit_id UUID REFERENCES visit(visit_id)
+);
+
+CREATE TABLE answer (
+    answer_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    repeat_index INT,
+    question_id UUID REFERENCES question(question_id),
+    session_id UUID REFERENCES answer_session(session_id),
+    value_id UUID
+);
+
+CREATE TABLE answer_value (
+    value_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    text_value TEXT,
+    number_value NUMERIC,
+    date_value TIMESTAMP,
+    file_url TEXT,
+    option_id UUID
+);
+
+CREATE TABLE option_choice (
+    option_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    content TEXT,
+    score NUMERIC,
+    order_index INT,
+    trigger_repeat BOOLEAN,
+    question_id UUID REFERENCES question(question_id)
+);
+
+CREATE TABLE payment_method (
+    method_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(100)
+);
+
+CREATE TABLE payment_status (
+    status_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(100)
+);
+
+CREATE TABLE payment (
+    payment_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    amount NUMERIC,
+    description TEXT,
+    expiry_date TIMESTAMP,
+    plan_type VARCHAR(50),
+    user_id UUID REFERENCES user_account(user_id),
+    status_id UUID REFERENCES payment_status(status_id),
+    method_id UUID REFERENCES payment_method(method_id)
+);
+
