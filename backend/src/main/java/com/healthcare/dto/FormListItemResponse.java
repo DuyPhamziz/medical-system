@@ -19,6 +19,7 @@ public class FormListItemResponse {
     private UUID formId;
     private String title;
     private String description;
+    private boolean template;
     private boolean publicForm;
     private boolean paid;
     private BigDecimal price;

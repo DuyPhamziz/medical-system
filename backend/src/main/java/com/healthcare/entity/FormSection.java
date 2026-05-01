@@ -50,6 +50,7 @@ public class FormSection {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
+    @org.hibernate.annotations.BatchSize(size = 50)
     @Builder.Default
     @OneToMany(mappedBy = "section", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("orderIndex ASC")

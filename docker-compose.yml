@@ -1,0 +1,42 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: med_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: hp12345
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      DB_URL: jdbc:postgresql://postgres:5432/med_db
+      DB_USERNAME: postgres
+      DB_PASSWORD: hp12345
+      JWT_SECRET: ${JWT_SECRET:-your-super-secret-key-that-should-be-at-least-256-bits}
+      CORS_ORIGINS: http://localhost:3000
+    depends_on:
+      - postgres
+    volumes:
+      - ./uploads:/app/uploads
+
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_BASE_URL: http://backend:8080/api
+      NEXT_PUBLIC_BFF_BASE_URL: /api/bff
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:

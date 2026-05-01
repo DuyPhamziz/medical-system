@@ -1,0 +1,24 @@
+package com.healthcare.dto;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.UUID;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class ClinicalScaleInsertRequest {
+    @JsonProperty("scaleId")
+    private UUID scaleId;
+
+    @JsonProperty("sectionId")
+    private UUID sectionId;
+
+    @JsonProperty("position")
+    private Integer position;
+}

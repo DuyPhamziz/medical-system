@@ -24,4 +24,11 @@ public class UserResponse {
     private List<String> permissions;
     private boolean roleLocked;
     private LocalDateTime createdAt;
+
+    // Profile info
+    private String fullName;
+    private String phoneNumber;
+    private String address;
+    private java.time.LocalDate dateOfBirth;
+    private String gender;
 }

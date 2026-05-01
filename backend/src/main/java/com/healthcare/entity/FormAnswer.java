@@ -49,6 +49,9 @@ public class FormAnswer {
     @Column(name = "value_date")
     private LocalDate valueDate;
 
+    @Column(name = "value_datetime")
+    private LocalDateTime valueDatetime;
+
     @Column(name = "value_boolean")
     private Boolean valueBoolean;
 

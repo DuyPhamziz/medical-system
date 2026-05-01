@@ -71,6 +71,7 @@ public class Form {
     @JoinColumn(name = "created_by", nullable = false)
     private User createdBy;
 
+    @org.hibernate.annotations.BatchSize(size = 20)
     @Builder.Default
     @OneToMany(mappedBy = "form", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("orderIndex ASC")

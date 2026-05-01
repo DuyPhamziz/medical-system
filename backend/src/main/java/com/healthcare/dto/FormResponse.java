@@ -78,6 +78,9 @@ public class FormResponse {
         private String helperText;
         private Integer scaleMin;
         private Integer scaleMax;
+        private String triggerLogic;
+        private String configJson;
+        private UUID scaleId;
         @Builder.Default
         private List<OptionResponse> options = new ArrayList<>();
     }

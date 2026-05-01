@@ -52,6 +52,8 @@ public class FormUpsertRequest {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class SectionRequest {
+        private String sectionId; // Optional UUID
+
         @NotBlank
         @Size(max = 255)
         private String title;
@@ -74,6 +76,8 @@ public class FormUpsertRequest {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class QuestionRequest {
+        private String questionId; // Optional UUID
+
         @NotBlank
         private String content;
 
@@ -97,6 +101,8 @@ public class FormUpsertRequest {
         private String helperText;
         private Integer scaleMin;
         private Integer scaleMax;
+        private String triggerLogic;
+        private String configJson;
 
         @Valid
         @Builder.Default
@@ -109,6 +115,8 @@ public class FormUpsertRequest {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class OptionRequest {
+        private String optionId; // Optional UUID
+
         @NotBlank
         private String content;
 

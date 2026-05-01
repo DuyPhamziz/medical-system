@@ -19,6 +19,16 @@ public class PatientResponse {
     private String fullName;
     private String email;
     private String username;
+    private String phoneNumber;
+    private String address;
+    private java.time.LocalDate dateOfBirth;
+    private String gender;
+    private String nationalId;
+    private String healthInsuranceNumber;
+    private String occupation;
+    private String emergencyContactName;
+    private String emergencyContactPhone;
+    private String status;
     private LocalDateTime createdAt;
     private UUID userId;
 }

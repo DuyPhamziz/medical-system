@@ -47,7 +47,7 @@ build/
 # =====================
 # PostgreSQL dumps (nếu có export)
 # =====================
-*.sql
+# *.sql
 *.dump
 *.backup
 

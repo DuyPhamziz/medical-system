@@ -1,0 +1,45 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] -----------------------< com.healthcare:backend >-----------------------
+[INFO] Building backend 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ backend ---
+[INFO] Copying 2 resources from src\main\resources to target\classes
+[INFO] Copying 10 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.13.0:compile (default-compile) @ backend ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 119 source files with javac [debug parameters release 21] to target\classes
+[INFO] -------------------------------------------------------------
+[ERROR] COMPILATION ERROR : 
+[INFO] -------------------------------------------------------------
+[ERROR] /H:/yhocgiadinh/med/backend/src/main/java/com/healthcare/service/FormAnswerProcessingService.java:[30,19] cannot find symbol
+  symbol:   class ClinicalScaleRepository
+  location: class com.healthcare.service.FormAnswerProcessingService
+[ERROR] /H:/yhocgiadinh/med/backend/src/main/java/com/healthcare/service/FormAnswerProcessingService.java:[22,1] cannot find symbol
+  symbol:   class ClinicalScaleRepository
+  location: class com.healthcare.service.FormAnswerProcessingService
+[INFO] 2 errors 
+[INFO] -------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  11.568 s
+[INFO] Finished at: 2026-05-01T19:33:11+07:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.13.0:compile (default-compile) on project backend: Compilation failure: Compilation failure: 
+[ERROR] /H:/yhocgiadinh/med/backend/src/main/java/com/healthcare/service/FormAnswerProcessingService.java:[30,19] cannot find symbol
+[ERROR]   symbol:   class ClinicalScaleRepository
+[ERROR]   location: class com.healthcare.service.FormAnswerProcessingService
+[ERROR] /H:/yhocgiadinh/med/backend/src/main/java/com/healthcare/service/FormAnswerProcessingService.java:[22,1] cannot find symbol
+[ERROR]   symbol:   class ClinicalScaleRepository
+[ERROR]   location: class com.healthcare.service.FormAnswerProcessingService
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException

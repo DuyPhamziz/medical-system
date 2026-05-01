@@ -15,5 +15,10 @@ public interface FormRepository extends JpaRepository<Form, UUID> {
 
     List<Form> findAllByOrderByUpdatedAtDesc();
 
+    List<Form> findAllByCreatedBy_UserIdOrderByUpdatedAtDesc(UUID userId);
+
+    List<Form> findByTemplateTrueAndCreatedBy_UserIdOrderByUpdatedAtDesc(UUID userId);
+
+    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"createdBy"})
     java.util.Optional<Form> findWithGraphByFormId(UUID formId);
 }

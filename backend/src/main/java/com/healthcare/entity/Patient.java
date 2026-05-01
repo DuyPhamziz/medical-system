@@ -26,6 +26,37 @@ public class Patient {
     @Column(name = "full_name", length = 255)
     private String fullName;
 
+    @Column(name = "phone_number", length = 20)
+    private String phoneNumber;
+
+    @Column(name = "address", length = 500)
+    private String address;
+
+    @Column(name = "date_of_birth")
+    private java.time.LocalDate dateOfBirth;
+
+    @Column(name = "gender", length = 20)
+    private String gender;
+
+    @Column(name = "national_id", length = 50)
+    private String nationalId;
+
+    @Column(name = "health_insurance_number", length = 50)
+    private String healthInsuranceNumber;
+
+    @Column(name = "occupation", length = 255)
+    private String occupation;
+
+    @Column(name = "emergency_contact_name", length = 255)
+    private String emergencyContactName;
+
+    @Column(name = "emergency_contact_phone", length = 20)
+    private String emergencyContactPhone;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", length = 20)
+    private com.healthcare.entity.enums.PatientStatus status;
+
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 

@@ -76,12 +76,24 @@ public class FormQuestion {
     @Column(name = "scale_max")
     private Integer scaleMax;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "scale_id")
+    private ClinicalScale clinicalScale;
+
+    @Column(name = "trigger_logic", columnDefinition = "TEXT")
+    private String triggerLogic;
+
+    @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.JSON)
+    @Column(name = "config_json")
+    private String configJson;
+
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
+    @org.hibernate.annotations.BatchSize(size = 100)
     @Builder.Default
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("orderIndex ASC")

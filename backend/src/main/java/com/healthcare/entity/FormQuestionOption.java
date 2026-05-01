@@ -37,6 +37,7 @@ public class FormQuestionOption {
     @Column(name = "order_index", nullable = false)
     private int orderIndex;
 
-    @Column(name = "trigger_logic", columnDefinition = "jsonb")
+    @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.JSON)
+    @Column(name = "trigger_logic")
     private String triggerLogic;
 }

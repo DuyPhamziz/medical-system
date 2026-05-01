@@ -26,17 +26,20 @@ import java.util.UUID;
 @Service
 public class AuthService {
     private final UserRepository userRepository;
+    private final com.healthcare.repository.PatientRepository patientRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
     public AuthService(
             UserRepository userRepository,
+            com.healthcare.repository.PatientRepository patientRepository,
             PasswordEncoder passwordEncoder,
             JwtService jwtService,
             AuthenticationManager authenticationManager
     ) {
         this.userRepository = userRepository;
+        this.patientRepository = patientRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.authenticationManager = authenticationManager;
@@ -80,6 +83,19 @@ public class AuthService {
         return buildAuthResponse(user);
     }
 
+    public UserResponse getCurrentUser() {
+        org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated()) {
+            throw new IllegalArgumentException("User not authenticated");
+        }
+
+        String email = auth.getName();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        return toUserResponse(user);
+    }
+
     @Transactional
     public UserResponse createUserByAdmin(AdminCreateUserRequest request) {
         User user = createUser(request.getUsername(), request.getEmail(), request.getPassword(), request.getRole());
@@ -119,7 +135,19 @@ public class AuthService {
         newUser.setRole(role);
         newUser.setRoleLocked(false);
         newUser.setCreatedAt(LocalDateTime.now());
-        return userRepository.save(newUser);
+        User savedUser = userRepository.save(newUser);
+
+        // If it's a patient, create a patient profile
+        if (role == Role.PATIENT) {
+            com.healthcare.entity.Patient patient = new com.healthcare.entity.Patient();
+            patient.setPatientId(UUID.randomUUID());
+            patient.setFullName(username);
+            patient.setUser(savedUser);
+            patient.setCreatedAt(LocalDateTime.now());
+            patientRepository.save(patient);
+        }
+
+        return savedUser;
     }
 
     private AuthResponse buildAuthResponse(User user) {
@@ -136,14 +164,27 @@ public class AuthService {
     }
 
     private UserResponse toUserResponse(User user) {
-        return UserResponse.builder()
+        UserResponse response = UserResponse.builder()
                 .userId(user.getUserId())
                 .username(user.getUsername())
                 .email(user.getEmail())
                 .role(user.getRole())
-            .permissions(RolePermissionMatrix.permissionsOf(user.getRole()).stream().map(Enum::name).toList())
+                .permissions(RolePermissionMatrix.permissionsOf(user.getRole()).stream().map(Enum::name).toList())
                 .roleLocked(user.isRoleLocked())
                 .createdAt(user.getCreatedAt())
                 .build();
+
+        // Populate profile info if available
+        if (user.getRole() == Role.PATIENT) {
+            patientRepository.findByUser(user).ifPresent(patient -> {
+                response.setFullName(patient.getFullName());
+                response.setPhoneNumber(patient.getPhoneNumber());
+                response.setAddress(patient.getAddress());
+                response.setDateOfBirth(patient.getDateOfBirth());
+                response.setGender(patient.getGender());
+            });
+        }
+
+        return response;
     }
 }
