@@ -105,12 +105,12 @@ public class ScoredQuestionService {
             Object optionId = map.get("optionId");
             if (optionId != null && question.getOptions() != null) {
                 String oidStr = String.valueOf(optionId);
-                question.getOptions().stream()
+                Optional<FormQuestionOption> matched = question.getOptions().stream()
                     .filter(o -> o.getOptionId() != null && o.getOptionId().toString().equals(oidStr))
-                    .findFirst()
-                    .ifPresent(o -> {
-                        if (o.getScore() != null) totalScore = o.getScore();
-                    });
+                    .findFirst();
+                if (matched.isPresent() && matched.get().getScore() != null) {
+                    totalScore = matched.get().getScore();
+                }
             }
         }
 

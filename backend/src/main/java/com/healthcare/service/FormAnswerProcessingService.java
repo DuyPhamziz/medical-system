@@ -27,7 +27,6 @@ public class FormAnswerProcessingService {
     private final FormConfigService configService;
     private final ObjectMapper objectMapper;
     private final PedigreeSyncService pedigreeSyncService;
-    private final ClinicalScaleRepository clinicalScaleRepository;
     private final ClinicalScaleService clinicalScaleService;
     private final ScoredQuestionService scoredQuestionService;
 
