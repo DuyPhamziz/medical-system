@@ -87,6 +87,28 @@ public class FormQuestion {
     @Column(name = "config_json")
     private String configJson;
 
+    @Column(name = "data_classification")
+    private String dataClassification;
+
+    @Column(name = "is_pii")
+    private boolean isPii;
+
+    @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.JSON)
+    @Column(name = "ai_config_json")
+    private String aiConfigJson;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_question_id")
+    private FormQuestion parentQuestion;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_option_id")
+    private FormQuestionOption parentOption;
+
+    @OneToMany(mappedBy = "parentQuestion", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<FormQuestion> subQuestions = new ArrayList<>();
+
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 

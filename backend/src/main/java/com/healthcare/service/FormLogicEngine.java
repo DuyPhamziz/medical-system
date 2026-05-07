@@ -79,36 +79,67 @@ public class FormLogicEngine {
      * For production, consider using a safe expression language library like EvalEx.
      */
     private boolean evaluateExpression(String expression) {
-        // Simple evaluation - split by logical operators
-        String[] orParts = expression.split("\\|\\|");
+        if (expression == null || expression.isBlank()) return true;
         
-        for (String orPart : orParts) {
-            boolean andResult = true;
-            String[] andParts = orPart.split("&&");
-            
-            for (String andPart : andParts) {
-                if (!evaluateComparison(andPart.trim())) {
-                    andResult = false;
-                    break;
-                }
+        // Split by || first (lowest precedence)
+        String[] orParts = splitByTopLevel(expression, "||");
+        if (orParts.length > 1) {
+            for (String part : orParts) {
+                if (evaluateExpression(part)) return true;
             }
-            
-            if (andResult) {
-                return true;
-            }
+            return false;
         }
         
-        return false;
+        // Split by &&
+        String[] andParts = splitByTopLevel(expression, "&&");
+        if (andParts.length > 1) {
+            for (String part : andParts) {
+                if (!evaluateExpression(part)) return false;
+            }
+            return true;
+        }
+        
+        // Handle parentheses
+        String trimmed = expression.trim();
+        if (trimmed.startsWith("(") && trimmed.endsWith(")")) {
+            return evaluateExpression(trimmed.substring(1, trimmed.length() - 1));
+        }
+        
+        // Handle NOT
+        if (trimmed.startsWith("!")) {
+            return !evaluateExpression(trimmed.substring(1));
+        }
+
+        return evaluateComparison(trimmed);
     }
 
-    /**
-     * Evaluate a single comparison: "5 > 3", "name == 'John'"
-     */
+    private String[] splitByTopLevel(String expr, String op) {
+        java.util.List<String> parts = new java.util.ArrayList<>();
+        int depth = 0;
+        int lastPos = 0;
+        for (int i = 0; i < expr.length() - op.length() + 1; i++) {
+            char c = expr.charAt(i);
+            if (c == '(') depth++;
+            else if (c == ')') depth--;
+            else if (depth == 0 && expr.startsWith(op, i)) {
+                parts.add(expr.substring(lastPos, i));
+                lastPos = i + op.length();
+                i += op.length() - 1;
+            }
+        }
+        parts.add(expr.substring(lastPos));
+        return parts.toArray(new String[0]);
+    }
+
     private boolean evaluateComparison(String comparison) {
-        // Remove whitespace and find operator
         comparison = comparison.trim();
         
-        String[] operators = {"==", "!=", ">=", "<=", ">", "<"};
+        // String functions
+        if (comparison.contains(".includes(")) {
+            return evaluateIncludes(comparison);
+        }
+
+        String[] operators = {"===", "!==", "==", "!=", ">=", "<=", ">", "<"};
         
         for (String op : operators) {
             if (comparison.contains(op)) {
@@ -128,6 +159,24 @@ public class FormLogicEngine {
     /**
      * Compare two values using the given operator
      */
+    private boolean evaluateIncludes(String comparison) {
+        Pattern pattern = Pattern.compile("(.+)\\.includes\\((.+)\\)");
+        Matcher matcher = pattern.matcher(comparison);
+        if (matcher.find()) {
+            String left = matcher.group(1).trim();
+            String right = matcher.group(2).trim();
+            Object leftVal = parseValue(left);
+            Object rightVal = parseValue(right);
+            if (leftVal instanceof java.util.Collection) {
+                return ((java.util.Collection<?>) leftVal).contains(rightVal);
+            }
+            if (leftVal instanceof String) {
+                return ((String) leftVal).contains(String.valueOf(rightVal));
+            }
+        }
+        return false;
+    }
+
     private boolean compareValues(String left, String operator, String right) {
         try {
             Object leftVal = parseValue(left);

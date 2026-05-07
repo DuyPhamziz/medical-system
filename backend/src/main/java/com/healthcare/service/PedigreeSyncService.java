@@ -73,16 +73,14 @@ public class PedigreeSyncService {
     private void syncDiseases(FamilyMember member, PedigreeAnswerDTO.PedigreeNodeDTO dto) {
         if (dto.getDiseases() == null) return;
 
-        // Simple approach: remove existing diseases and re-add
-        // In a production app, we might want more sophisticated matching
-        // But FamilyMemberDisease doesn't have a natural key here.
-        
-        // However, we don't have a findByFamilyMember method yet.
-        // Let's just add them for now, or assume this is a new member if it's not linked to a patient.
-        
+        // Remove existing diseases and re-add to prevent unbounded growth
+        // on repeated pedigree edits
+        familyMemberDiseaseRepository.findByFamilyMember(member).ifPresent(existing -> {
+            familyMemberDiseaseRepository.deleteAll(existing);
+            familyMemberDiseaseRepository.flush();
+        });
+
         for (String diseaseName : dto.getDiseases()) {
-            // Check if disease already exists for this member to avoid simple duplicates
-            // This is still primitive but better than nothing.
             FamilyMemberDisease disease = FamilyMemberDisease.builder()
                     .familyMember(member)
                     .diseaseName(diseaseName)

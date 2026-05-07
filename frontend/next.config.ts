@@ -5,6 +5,15 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ['@mui/material', '@mui/icons-material'],
   },
+  // Giữ webpack cache filesystem nhưng tăng generations để tránh re-compile liên tục
+  webpack: (config) => {
+    config.cache = {
+      type: 'filesystem',
+      maxMemoryGenerations: 8,
+      compression: 'gzip',
+    };
+    return config;
+  },
   async redirects() {
     return [
       {

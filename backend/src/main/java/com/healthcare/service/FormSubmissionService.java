@@ -12,6 +12,7 @@ import com.healthcare.security.FormPermissionService;
 import com.healthcare.service.engine.FormEngine;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -19,9 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class FormSubmissionService {
     private final FormRepository formRepository;
     private final AnswerSessionRepository answerSessionRepository;
@@ -32,28 +33,8 @@ public class FormSubmissionService {
     private final FormEngine formEngine;
     private final ObjectMapper objectMapper;
     private final FormAnswerProcessingService formAnswerProcessingService;
-
-    public FormSubmissionService(
-            FormRepository formRepository,
-            AnswerSessionRepository answerSessionRepository,
-            FormAnswerRepository formAnswerRepository,
-            PatientRepository patientRepository,
-            UserRepository userRepository,
-            FormPermissionService formPermissionService,
-            FormEngine formEngine,
-            ObjectMapper objectMapper,
-            FormAnswerProcessingService formAnswerProcessingService
-    ) {
-        this.formRepository = formRepository;
-        this.answerSessionRepository = answerSessionRepository;
-        this.formAnswerRepository = formAnswerRepository;
-        this.patientRepository = patientRepository;
-        this.userRepository = userRepository;
-        this.formPermissionService = formPermissionService;
-        this.formEngine = formEngine;
-        this.objectMapper = objectMapper;
-        this.formAnswerProcessingService = formAnswerProcessingService;
-    }
+    private final FormSubmissionValidator submissionValidator;
+    private final FormMapper formMapper;
 
     @Transactional
     public AnswerSessionResponse saveDraft(UUID formId, AnswerSubmissionRequest request) {
@@ -70,7 +51,7 @@ public class FormSubmissionService {
         Patient patient = currentPatient();
         return answerSessionRepository.findByPatient_PatientIdOrderByLastSavedAtDesc(patient.getPatientId())
                 .stream()
-                .map(this::toAnswerSessionResponse)
+                .map(session -> formMapper.toAnswerSessionResponse(session, session.getAnswers()))
                 .toList();
     }
 
@@ -87,7 +68,7 @@ public class FormSubmissionService {
             if (!prepared.isValid()) {
                 throw new IllegalArgumentException("Validation failed: " + String.join("; ", prepared.getValidationErrors()));
             }
-            validateRequiredAnswers(form, request.getAnswers());
+            submissionValidator.validateRequiredAnswers(form, request.getAnswers());
         }
 
         Patient patient = resolvePatient(request.getPatientId());
@@ -109,8 +90,8 @@ public class FormSubmissionService {
             session.setSubmittedBy(currentUser());
         }
 
-        AnswerSession savedSession = answerSessionRepository.save(session);
-        formAnswerRepository.deleteBySession_SessionId(savedSession.getSessionId());
+        formAnswerRepository.deleteBySession_SessionId(session.getSessionId());
+        formAnswerRepository.flush();
 
         BigDecimal totalScore = BigDecimal.ZERO;
         List<FormAnswer> savedAnswers = new ArrayList<>();
@@ -120,7 +101,7 @@ public class FormSubmissionService {
             FormQuestionOption option = item.getOptionId() == null ? null : findOption(question, item.getOptionId());
 
             FormAnswer answer = FormAnswer.builder()
-                    .session(savedSession)
+                    .session(session)
                     .question(question)
                     .option(option)
                     .repeatIndex(item.getRepeatIndex() == null ? 0 : item.getRepeatIndex())
@@ -130,97 +111,51 @@ public class FormSubmissionService {
                     .valueBoolean(item.getValueBoolean())
                     .valueJson(item.getValueJson())
                     .build();
-            formAnswerRepository.save(answer);
             savedAnswers.add(answer);
             if (option != null && option.getScore() != null) {
                 totalScore = totalScore.add(option.getScore());
             }
         }
 
-        // Process dynamic answers (matrix, calculations, file uploads, etc.)
-        Map<String, Object> answerValuesMap = buildAnswerValuesMap(savedAnswers);
-        for (FormAnswer answer : savedAnswers) {
+        final AnswerSession savedSession = answerSessionRepository.save(session);
+        savedAnswers.forEach(a -> a.setSession(savedSession));
+        List<FormAnswer> persistedAnswers = formAnswerRepository.saveAll(savedAnswers);
+        formAnswerRepository.flush();
+
+        Map<String, Object> answerValuesMap = buildAnswerValuesMap(persistedAnswers);
+        for (FormAnswer answer : persistedAnswers) {
             formAnswerProcessingService.processAnswer(answer, answerValuesMap);
-            formAnswerRepository.save(answer);
         }
+        formAnswerRepository.saveAll(persistedAnswers);
 
         Map<String, Object> computedValues = prepared.getComputedValues();
         if (computedValues != null) {
+            List<FormAnswer> computedAnswers = new ArrayList<>();
             for (Map.Entry<String, Object> entry : computedValues.entrySet()) {
                 FormQuestion computedQuestion = findComputedQuestion(form, entry.getKey());
                 if (computedQuestion != null) {
                     boolean alreadySaved = request.getAnswers().stream()
                             .anyMatch(a -> a.getQuestionId().equals(computedQuestion.getQuestionId()));
                     if (!alreadySaved) {
-                        FormAnswer computedAnswer = FormAnswer.builder()
+                        computedAnswers.add(FormAnswer.builder()
                                 .session(savedSession)
                                 .question(computedQuestion)
                                 .repeatIndex(0)
                                 .valueJson(serializeValue(entry.getValue()))
-                                .build();
-                        formAnswerRepository.save(computedAnswer);
+                                .build());
                     }
                 }
+            }
+            if (!computedAnswers.isEmpty()) {
+                formAnswerRepository.saveAll(computedAnswers);
+                persistedAnswers.addAll(computedAnswers);
             }
         }
 
         savedSession.setTotalScore(totalScore);
-        return toAnswerSessionResponse(answerSessionRepository.save(savedSession));
-    }
+        answerSessionRepository.save(savedSession);
 
-    private void validateRequiredAnswers(Form form, List<AnswerSubmissionRequest.AnswerItem> answers) {
-        Map<UUID, Object> currentAnswers = new HashMap<>();
-        for (AnswerSubmissionRequest.AnswerItem item : answers) {
-            currentAnswers.put(item.getQuestionId(), extractAnswerValue(item));
-        }
-
-        FormEngine.FormState formState = formEngine.evaluateFormState(form, currentAnswers);
-        Map<UUID, List<AnswerSubmissionRequest.AnswerItem>> answersByQuestion = answers.stream()
-                .collect(Collectors.groupingBy(AnswerSubmissionRequest.AnswerItem::getQuestionId));
-
-        for (FormEngine.FormState.SectionState sectionState : formState.getSections()) {
-            for (FormEngine.FormState.QuestionState questionState : sectionState.getQuestions()) {
-                if (!questionState.isEffectiveRequired()) continue;
-
-                List<AnswerSubmissionRequest.AnswerItem> questionAnswers = answersByQuestion.get(questionState.getQuestionId());
-                FormQuestion question = findQuestion(form, questionState.getQuestionId());
-                
-                if (questionAnswers == null || questionAnswers.isEmpty()) {
-                    throw new IllegalArgumentException("Required question is missing answer: " + questionState.getContent());
-                }
-
-                boolean valid = questionAnswers.stream().anyMatch(a -> isAnswerValid(a, question.getQuestionType()));
-                if (!valid) {
-                    throw new IllegalArgumentException("Required question has no valid answer: " + questionState.getContent());
-                }
-            }
-        }
-    }
-
-    private AnswerSessionResponse toAnswerSessionResponse(AnswerSession session) {
-        return AnswerSessionResponse.builder()
-                .sessionId(session.getSessionId())
-                .formId(session.getForm().getFormId())
-                .patientId(session.getPatient().getPatientId())
-                .visitId(session.getVisitId())
-                .status(session.getStatus())
-                .source(session.getSource())
-                .startedAt(session.getStartedAt())
-                .submittedAt(session.getSubmittedAt())
-                .lastSavedAt(session.getLastSavedAt())
-                .totalScore(session.getTotalScore())
-                .answers(session.getAnswers().stream().map(answer -> AnswerSessionResponse.AnswerResponse.builder()
-                        .answerId(answer.getAnswerId())
-                        .questionId(answer.getQuestion().getQuestionId())
-                        .optionId(answer.getOption() == null ? null : answer.getOption().getOptionId())
-                        .repeatIndex(answer.getRepeatIndex())
-                        .valueText(answer.getValueText())
-                        .valueNumber(answer.getValueNumber())
-                        .valueDate(answer.getValueDate())
-                        .valueBoolean(answer.getValueBoolean())
-                        .valueJson(answer.getValueJson())
-                        .build()).toList())
-                .build();
+        return formMapper.toAnswerSessionResponse(savedSession, persistedAnswers);
     }
 
     private FormQuestion findQuestion(Form form, UUID questionId) {
@@ -263,17 +198,6 @@ public class FormSubmissionService {
                 .orElseThrow(() -> new IllegalArgumentException("Patient profile not found"));
     }
 
-    private Object extractAnswerValue(AnswerSubmissionRequest.AnswerItem item) {
-        if (item.getValueJson() != null && !item.getValueJson().isBlank()) {
-            try { return objectMapper.readTree(item.getValueJson()); } catch (Exception e) { return item.getValueJson(); }
-        }
-        if (item.getValueText() != null) return item.getValueText();
-        if (item.getValueNumber() != null) return item.getValueNumber();
-        if (item.getValueDate() != null) return item.getValueDate();
-        if (item.getValueBoolean() != null) return item.getValueBoolean();
-        return null;
-    }
-
     private FormQuestion findComputedQuestion(Form form, String fieldName) {
         return form.getSections().stream()
                 .flatMap(s -> s.getQuestions().stream())
@@ -295,27 +219,6 @@ public class FormSubmissionService {
         try { return objectMapper.writeValueAsString(value); } catch (Exception e) { return value.toString(); }
     }
 
-    private boolean isAnswerValid(AnswerSubmissionRequest.AnswerItem answer, QuestionType questionType) {
-        switch (questionType) {
-            case TEXT: return answer.getValueText() != null && !answer.getValueText().trim().isEmpty();
-            case NUMBER:
-            case SCALE: return answer.getValueNumber() != null;
-            case DATE: return answer.getValueDate() != null;
-            case SINGLE_CHOICE: return answer.getOptionId() != null;
-            case MULTIPLE_CHOICE:
-            case MATRIX:
-            case PEDIGREE:
-            case BODY_MAP:
-            case FILE_UPLOAD:
-            case LOOKUP:
-            case TIME_SERIES:
-                return answer.getValueJson() != null && !answer.getValueJson().isEmpty();
-            case CALCULATED:
-                return true; // Calculated values might be filled later by the engine
-            default: return false;
-        }
-    }
-
     private Map<String, Object> buildAnswerValuesMap(List<FormAnswer> answers) {
         Map<String, Object> answerMap = new HashMap<>();
         for (FormAnswer answer : answers) {
@@ -327,21 +230,11 @@ public class FormSubmissionService {
     }
 
     private Object extractAnswerValueFromFormAnswer(FormAnswer answer) {
-        if (answer.getValueNumber() != null) {
-            return answer.getValueNumber();
-        }
-        if (answer.getValueText() != null) {
-            return answer.getValueText();
-        }
-        if (answer.getValueBoolean() != null) {
-            return answer.getValueBoolean();
-        }
-        if (answer.getValueDate() != null) {
-            return answer.getValueDate();
-        }
-        if (answer.getValueJson() != null) {
-            return answer.getValueJson();
-        }
+        if (answer.getValueNumber() != null) return answer.getValueNumber();
+        if (answer.getValueText() != null) return answer.getValueText();
+        if (answer.getValueBoolean() != null) return answer.getValueBoolean();
+        if (answer.getValueDate() != null) return answer.getValueDate();
+        if (answer.getValueJson() != null) return answer.getValueJson();
         return null;
     }
 }

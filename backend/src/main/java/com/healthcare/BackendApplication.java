@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 @SpringBootApplication
+@org.springframework.cache.annotation.EnableCaching
 @EnableConfigurationProperties(AdminSeedProperties.class)
 public class BackendApplication {
 

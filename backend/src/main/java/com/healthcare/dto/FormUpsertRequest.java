@@ -103,6 +103,15 @@ public class FormUpsertRequest {
         private Integer scaleMax;
         private String triggerLogic;
         private String configJson;
+        private String aiConfigJson;
+        private String dataClassification;
+        private boolean isPii;
+        private String parentQuestionId;
+        private String parentOptionId;
+
+        @Valid
+        @Builder.Default
+        private List<QuestionRequest> subQuestions = new ArrayList<>();
 
         @Valid
         @Builder.Default

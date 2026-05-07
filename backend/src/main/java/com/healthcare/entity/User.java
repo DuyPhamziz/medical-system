@@ -41,6 +41,9 @@ public class User {
     @Column(name = "role_id", nullable = false, length = 64)
     private Role role;
 
+    @Column(name = "org_id")
+    private UUID orgId;
+
     @Transient
     private boolean roleLocked;
 

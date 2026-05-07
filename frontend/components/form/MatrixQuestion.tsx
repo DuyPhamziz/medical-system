@@ -1,205 +1,147 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  Radio,
-  RadioGroup,
-  Paper,
-  Typography,
-  Stack,
-  TextField,
-  IconButton,
-  Button,
-} from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
-import DeleteIcon from '@mui/icons-material/Delete';
-import { v4 as uuidv4 } from 'uuid';
-
-// Hàng (ví dụ: tính chất công việc) - được định nghĩa sẵn
-interface MatrixRow {
-  rowId: string;
-  label: string;
-}
-
-// Lựa chọn cho mỗi ô (ví dụ: Nhẹ, Trung Bình, Nặng) - được định nghĩa sẵn
-interface MatrixOption {
-  optionId: string;
-  label: string;
-}
-
-// Cột động do người dùng tạo (ví dụ: nghề nghiệp)
-export interface DynamicColumn {
-  id: string; // ID duy nhất cho cột
-  label: string; // Tên nghề nghiệp do người dùng nhập
-  values: Record<string, string>; // { [rowId]: optionId }
-}
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { MatrixRow, MatrixColumn, MatrixValue, MatrixCellMode } from "./matrix/types";
+import { 
+  normalizeRows, 
+  normalizeColumns, 
+  normalizeScoreOptions, 
+  normalizeMatrixValue 
+} from "./matrix/utils";
+import { MatrixHeader } from "./matrix/MatrixHeader";
+import { MatrixRowView } from "./matrix/MatrixRowView";
+import styles from "./MatrixQuestion.module.css";
 
 interface MatrixQuestionProps {
   content: string;
   required?: boolean;
+  options?: any[];
   config?: {
     rows?: MatrixRow[];
-    options?: MatrixOption[];
-    answerMode?: 'SINGLE'; // Hiện tại chỉ hỗ trợ SINGLE
+    columns?: MatrixColumn[];
+    defaultCellMode?: MatrixCellMode;
+    scoreOptions?: any[];
   };
-  value?: DynamicColumn[];
-  onChange?: (value: DynamicColumn[]) => void;
+  value?: unknown;
+  onChange?: (value: MatrixValue) => void;
 }
 
 export const MatrixQuestion: React.FC<MatrixQuestionProps> = ({
   content,
   required = false,
+  options = [],
   config = {},
-  value = [],
+  value,
   onChange,
 }) => {
-  const { rows = [], options = [] } = config;
-  const [dynamicColumns, setDynamicColumns] = useState<DynamicColumn[]>([]);
+  const rows = useMemo(() => normalizeRows(config.rows, options), [config.rows, options]);
+  const columns = useMemo(
+    () => normalizeColumns(config.columns, options, config.defaultCellMode ?? "score", config.scoreOptions),
+    [config.columns, options, config.defaultCellMode, config.scoreOptions],
+  );
+  const scoreOptions = useMemo(() => normalizeScoreOptions(config.scoreOptions), [config.scoreOptions]);
+
+  const normalizedIncomingValue = useMemo(
+    () => normalizeMatrixValue(value, rows, columns),
+    [value, rows, columns],
+  );
+
+  const [matrixValue, setMatrixValue] = useState<MatrixValue>(normalizedIncomingValue);
+  const syncingFromPropsRef = useRef(true);
 
   useEffect(() => {
-    // This effect synchronizes the internal state with the `value` prop from the outside.
-    // This is a standard pattern for controlled components that also need internal state
-    // to manage transient user interactions (like adding a new, unsaved column).
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setDynamicColumns(value?.map(col => ({ ...col, id: col.id || uuidv4() })) || []);
-  }, [value]);
+    syncingFromPropsRef.current = true;
+    setMatrixValue(normalizedIncomingValue);
+  }, [normalizedIncomingValue]);
 
-  const triggerChange = useCallback((newColumns: DynamicColumn[]) => {
-    if (onChange) {
-      onChange(newColumns);
+  useEffect(() => {
+    if (syncingFromPropsRef.current) {
+      syncingFromPropsRef.current = false;
+      return;
     }
-  }, [onChange]);
 
-  const handleAddColumn = () => {
-    const newColumn: DynamicColumn = {
-      id: uuidv4(),
-      label: '',
-      values: {},
-    };
-    const newColumns = [...dynamicColumns, newColumn];
-    setDynamicColumns(newColumns);
-    triggerChange(newColumns);
-  };
-
-  const handleRemoveColumn = (columnId: string) => {
-    const newColumns = dynamicColumns.filter(col => col.id !== columnId);
-    setDynamicColumns(newColumns);
-    triggerChange(newColumns);
-  };
-
-  const handleColumnLabelChange = (columnId: string, newLabel: string) => {
-    const newColumns = dynamicColumns.map(col =>
-      col.id === columnId ? { ...col, label: newLabel } : col
-    );
-    setDynamicColumns(newColumns);
-    triggerChange(newColumns);
-  };
-
-  const handleCellChange = (columnId: string, rowId: string, optionId: string) => {
-    const newColumns = dynamicColumns.map(col => {
-      if (col.id === columnId) {
-        const newValues = { ...col.values, [rowId]: optionId };
-        return { ...col, values: newValues };
-      }
-      return col;
+    onChange?.({
+      version: 2,
+      rows,
+      columns,
+      cells: matrixValue.cells,
     });
-    setDynamicColumns(newColumns);
-    triggerChange(newColumns);
+  }, [columns, matrixValue, onChange, rows]);
+
+  const handleTextChange = (rowId: string, columnId: string, nextValue: string) => {
+    setMatrixValue((prev) => ({
+      ...prev,
+      rows,
+      columns,
+      cells: {
+        ...prev.cells,
+        [rowId]: {
+          ...(prev.cells[rowId] ?? {}),
+          [columnId]: { mode: "text", value: nextValue },
+        },
+      },
+    }));
   };
+
+  const handleScoreChange = (rowId: string, columnId: string, nextValue: string) => {
+    setMatrixValue((prev) => ({
+      ...prev,
+      rows,
+      columns,
+      cells: {
+        ...prev.cells,
+        [rowId]: {
+          ...(prev.cells[rowId] ?? {}),
+          [columnId]: { mode: "score", value: nextValue },
+        },
+      },
+    }));
+  };
+
+  const isEmpty = rows.length === 0 || columns.length === 0;
 
   return (
-    <Paper elevation={0} sx={{ p: 2, border: '1px solid #e0e0e0' }}>
-      <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 600 }}>
-        {content}
-        {required && <span style={{ color: 'red' }}>*</span>}
-      </Typography>
+    <div className={styles.matrixShell}>
+      <div className={styles.matrixHead}>
+        <div>
+          <div className={styles.matrixTitle}>
+            {content}
+            {required && <span className={styles.matrixRequired}>*</span>}
+          </div>
+          <div className={styles.matrixDescription}>Bảng có thể kết hợp ô trả lời ngắn và ô chấm điểm 3 mức độ.</div>
+        </div>
+        <div className={styles.matrixLegend}>
+          <span className={`${styles.matrixLegendChip} ${styles.matrixLegendChipText}`}>Ô trả lời ngắn</span>
+          <span className={`${styles.matrixLegendChip} ${styles.matrixLegendChipScore}`}>Ô chấm điểm</span>
+        </div>
+      </div>
 
-      <Stack sx={{ overflowX: 'auto' }}>
-        <Table sx={{ minWidth: 600 }}>
-          <TableHead>
-            <TableRow>
-              <TableCell sx={{ width: '25%', minWidth: 150, fontWeight: 600 }}>
-                Tính chất
-              </TableCell>
-              {dynamicColumns.map((col, index) => (
-                <TableCell key={col.id} sx={{ minWidth: 200 }}>
-                  <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-                    <TextField
-                      variant="standard"
-                      placeholder={`Nghề nghiệp ${index + 1}`}
-                      value={col.label}
-                      onChange={(e) => handleColumnLabelChange(col.id, e.target.value)}
-                      fullWidth
-                    />
-                    <IconButton size="small" onClick={() => handleRemoveColumn(col.id)}>
-                      <DeleteIcon fontSize="small" />
-                    </IconButton>
-                  </Stack>
-                </TableCell>
-              ))}
-              <TableCell sx={{ width: '10%', padding: '0 8px' }}>
-                <Button
-                  variant="outlined"
-                  startIcon={<AddIcon />}
-                  onClick={handleAddColumn}
-                  size='small'
-                  sx={{ whiteSpace: 'nowrap' }}
-                >
-                  Thêm Cột
-                </Button>
-              </TableCell>
-            </TableRow>
-            <TableRow>
-                <TableCell></TableCell>
-                {dynamicColumns.map((col) => (
-                    <TableCell key={col.id} align="center" sx={{padding: '4px'}}>
-                        <Stack direction="row" spacing={1} sx={{ justifyContent: 'center' }}>
-                            {options.map((opt) => (
-                                <Typography key={opt.optionId} variant="caption" sx={{width: '50px', textAlign: 'center'}}>{opt.label}</Typography>
-                            ))}
-                        </Stack>
-                    </TableCell>
-                ))}
-                <TableCell></TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
+      {isEmpty ? (
+        <div className={styles.matrixEmptyState}>
+          <strong>Chưa có hàng hoặc cột.</strong>
+          <span>Hãy cấu hình hàng và cột trong phần chỉnh sửa câu hỏi.</span>
+        </div>
+      ) : (
+        <div className={styles.matrixGridWrapper}>
+          <div
+            className={styles.matrixGrid}
+            style={{
+              gridTemplateColumns: `minmax(240px, 1.2fr) repeat(${columns.length}, minmax(220px, 1fr))`,
+            }}
+          >
+            <MatrixHeader rows={rows} columns={columns} scoreOptions={scoreOptions} />
             {rows.map((row) => (
-              <TableRow key={row.rowId} hover>
-                <TableCell component="th" scope="row" sx={{ fontWeight: 500 }}>
-                  {row.label}
-                </TableCell>
-                {dynamicColumns.map((col) => {
-                  const selectedOption = col.values[row.rowId];
-                  return (
-                    <TableCell key={col.id} align="center">
-                       <RadioGroup
-                        row
-                        value={selectedOption || ''}
-                        onChange={(e) => handleCellChange(col.id, row.rowId, e.target.value)}
-                        sx={{justifyContent: 'center'}}
-                      >
-                        {options.map((opt) => (
-                            <Radio
-                                key={opt.optionId}
-                                value={opt.optionId}
-                                sx={{width: '50px', padding: '2px', margin: '0'}}
-                            />
-                        ))}
-                      </RadioGroup>
-                    </TableCell>
-                  );
-                })}
-                <TableCell></TableCell>
-              </TableRow>
+              <MatrixRowView
+                key={row.rowId}
+                row={row}
+                columns={columns}
+                scoreOptions={scoreOptions}
+                value={matrixValue}
+                onTextChange={handleTextChange}
+                onScoreChange={handleScoreChange}
+              />
             ))}
-          </TableBody>
-        </Table>
-      </Stack>
-    </Paper>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
-

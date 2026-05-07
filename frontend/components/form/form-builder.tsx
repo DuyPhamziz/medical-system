@@ -37,6 +37,26 @@ export function FormBuilder({ initialForm, mode, onSave, onPublish }: Props) {
 	const [showPreview, setShowPreview] = useState(false);
 	const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
 	const [isSaving, setIsSaving] = useState(false);
+	const [lastSavedTime, setLastSavedTime] = useState<Date | null>(null);
+
+	// Auto-save logic
+	useEffect(() => {
+		if (!onSave || mode === 'create') return;
+
+		const timer = setTimeout(async () => {
+			setIsSaving(true);
+			try {
+				await onSave(form);
+				setLastSavedTime(new Date());
+			} catch (error) {
+				console.error("Auto-save failed:", error);
+			} finally {
+				setIsSaving(false);
+			}
+		}, 3000); // Save after 3 seconds of inactivity
+
+		return () => clearTimeout(timer);
+	}, [form, onSave, mode]);
 
 	// Sync internal state if initialForm changes from props (after successful API save)
 	useEffect(() => {
@@ -193,6 +213,21 @@ export function FormBuilder({ initialForm, mode, onSave, onPublish }: Props) {
 						</span>
 						<div className="h-4 w-px bg-slate-200" />
 						<h1 className="text-sm font-bold text-slate-600 truncate max-w-[300px]">{form.title || "Biểu mẫu không tên"}</h1>
+						
+						{/* Saving Indicator */}
+						<div className="flex items-center gap-2 ml-4">
+							{isSaving ? (
+								<div className="flex items-center gap-1.5 text-emerald-600 animate-pulse">
+									<div className="h-1.5 w-1.5 rounded-full bg-emerald-600"></div>
+									<span className="text-[11px] font-bold">Đang tự động lưu...</span>
+								</div>
+							) : lastSavedTime ? (
+								<div className="flex items-center gap-1.5 text-slate-400">
+									<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+									<span className="text-[11px] font-medium">Đã lưu lúc {lastSavedTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+								</div>
+							) : null}
+						</div>
 					</div>
 					<div className="flex items-center gap-3">
 						<Button 
@@ -285,13 +320,15 @@ export function FormBuilder({ initialForm, mode, onSave, onPublish }: Props) {
 				title="Xem trước biểu mẫu"
 			>
 				<div className="max-h-[80vh] overflow-y-auto p-1">
-					<FormRenderer 
-						form={form} 
-						onSubmit={async (data) => {
-							console.log("Preview submission:", data);
-							setShowPreview(false);
-						}}
-					/>
+					{showPreview && (
+						<FormRenderer 
+							form={form} 
+							onSubmit={async (data) => {
+								console.log("Preview submission:", data);
+								setShowPreview(false);
+							}}
+						/>
+					)}
 				</div>
 			</Modal>
 		</div>

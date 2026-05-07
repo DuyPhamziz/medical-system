@@ -1,7 +1,7 @@
 "use client";
 
 import { FormQuestion, FormQuestionType } from "@/types/form";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { LogicEditor } from "./logic-editor";
 import { MatrixConfig } from "./builder/MatrixConfig";
 import { TimeSeriesConfig } from "./builder/TimeSeriesConfig";
@@ -11,6 +11,7 @@ import { TextConfig } from "./builder/TextConfig";
 import { ClinicalScaleConfig } from "./builder/ClinicalScaleConfig";
 import { ScoredConfig } from "./builder/ScoredConfig";
 import { RepeatableGroupConfig } from "./builder/RepeatableGroupConfig";
+import { AIConfig } from "./builder/AIConfig";
 
 const QUESTION_TYPES: FormQuestionType[] = [
   "text", "number", "date", "datetime", "single_choice", "multiple_choice",
@@ -42,24 +43,7 @@ export function QuestionEditor({
   onFocus 
 }: Props) {
   const [showLogic, setShowLogic] = useState(false);
-
-  // Auto-sync configJson for Matrix if needed
-  useEffect(() => {
-    if (question.questionType === "matrix") {
-      const rows = question.options
-        .filter(o => {
-          try { return JSON.parse(o.triggerLogic || "{}").type === "row"; } catch { return false; }
-        })
-        .map(o => ({ rowId: o.optionId, label: o.content }));
-      
-      const config = { matrixRows: rows };
-      const configJson = JSON.stringify(config);
-      
-      if ((question as any).configJson !== configJson) {
-        onChange({ configJson } as any);
-      }
-    }
-  }, [question.options, question.questionType, onChange]);
+  const [showAI, setShowAI] = useState(false);
 
   return (
     <div
@@ -68,7 +52,7 @@ export function QuestionEditor({
         e.stopPropagation();
         onFocus?.(e);
       }}
-      className={`group relative space-y-5 rounded-[2rem] border transition-all duration-300 ${
+      className={`group relative space-y-5 rounded-4xl border transition-all duration-300 ${
         activeId === question.questionId 
           ? 'border-emerald-500 ring-8 ring-emerald-50 focus-within:shadow-2xl bg-white' 
           : 'border-slate-100 bg-white hover:border-emerald-200'
@@ -162,12 +146,28 @@ export function QuestionEditor({
 
         <ValidationConfig question={question} onChange={onChange} />
 
+        {(question.questionType === "number" || question.questionType === "scored" || question.questionType === "calculated") && showAI && (
+          <AIConfig question={question} onChange={onChange} />
+        )}
+
         <div className="flex items-center justify-end gap-8 pt-4 border-t border-slate-50">
           <Checkbox label="Bắt buộc" checked={question.required} onChange={(v) => onChange({ required: v })} />
           <Checkbox label="Cho phép lặp" checked={question.allowRepeat} onChange={(v) => onChange({ allowRepeat: v })} />
-          <button onClick={() => setShowLogic(true)} className="flex items-center gap-2 text-[10px] font-black uppercase text-slate-400 hover:text-emerald-600">
-            <div className="p-1.5 rounded-lg bg-slate-50">⚡ Logic</div>
-          </button>
+          
+          <div className="flex items-center gap-4">
+            {(question.questionType === "number" || question.questionType === "scored" || question.questionType === "calculated") && (
+              <button 
+                onClick={() => setShowAI(!showAI)} 
+                className={`flex items-center gap-2 text-[10px] font-black uppercase transition-colors ${showAI ? 'text-emerald-600' : 'text-slate-400 hover:text-emerald-600'}`}
+              >
+                <div className={`p-1.5 rounded-lg ${showAI ? 'bg-emerald-50' : 'bg-slate-50'}`}>🤖 AI</div>
+              </button>
+            )}
+            
+            <button onClick={() => setShowLogic(true)} className="flex items-center gap-2 text-[10px] font-black uppercase text-slate-400 hover:text-emerald-600">
+              <div className="p-1.5 rounded-lg bg-slate-50">⚡ Logic</div>
+            </button>
+          </div>
         </div>
       </div>
 

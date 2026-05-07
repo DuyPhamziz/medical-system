@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { Button } from "@/components/ui/button";
 import { FormAnswerValue, FormDefinition, FormSession, FormQuestion } from "@/types/form";
 import { QuestionSwitcher } from "./QuestionSwitcher";
@@ -92,12 +93,13 @@ export function FormRenderer({
             />
 
             <div className="space-y-6">
-              {activeSection.questions.map((q) => (
+              {activeSection.questions.map((q: FormQuestion) => (
                 <QuestionWrapper key={q.questionId} question={q} error={logic.errors[q.questionId!]}>
                   <QuestionSwitcher
                     question={q}
                     answers={logic.answers[q.questionId!] || { 0: {} }}
                     onChange={logic.updateValue}
+                    computedValues={logic.computedValues}
                   />
                 </QuestionWrapper>
               ))}
@@ -127,7 +129,7 @@ export function FormRenderer({
   );
 }
 
-function CardHeader({
+const CardHeader = React.memo(function CardHeader({
   form,
   mode,
   saving,
@@ -165,9 +167,9 @@ function CardHeader({
       </div>
     </div>
   );
-}
+});
 
-function SectionHeader({
+const SectionHeader = React.memo(function SectionHeader({
   title,
   description,
   current,
@@ -190,9 +192,9 @@ function SectionHeader({
       {description && <p className="mt-1 text-slate-500 leading-relaxed">{description}</p>}
     </div>
   );
-}
+});
 
-function QuestionWrapper({
+const QuestionWrapper = React.memo(function QuestionWrapper({
   children,
   question,
   error,
@@ -241,4 +243,4 @@ function QuestionWrapper({
       )}
     </motion.div>
   );
-}
+});

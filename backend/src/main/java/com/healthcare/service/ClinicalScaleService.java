@@ -8,6 +8,8 @@ import com.healthcare.repository.ClinicalScaleRepository;
 import com.healthcare.repository.FormRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,7 +22,7 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Service
-@Transactional
+@Transactional(readOnly = true)
 public class ClinicalScaleService {
 
     @Autowired
@@ -35,6 +37,7 @@ public class ClinicalScaleService {
     /**
      * Get all available scales
      */
+    @Cacheable(value = "clinicalScales", unless = "#result == null or #result.isEmpty()")
     public List<ClinicalScaleResponse> getAllScales() {
         return scaleRepository.findByIsActiveTrue().stream()
                 .map(this::toResponse)
@@ -44,6 +47,7 @@ public class ClinicalScaleService {
     /**
      * Get scales by category
      */
+    @Cacheable(value = "clinicalScales", key = "#category")
     public List<ClinicalScaleResponse> getScalesByCategory(String category) {
         return scaleRepository.findByIsActiveTrueAndCategory(category).stream()
                 .map(this::toResponse)
@@ -53,6 +57,7 @@ public class ClinicalScaleService {
     /**
      * Get scale detail by ID or name
      */
+    @Cacheable(value = "clinicalScales", key = "#scaleId != null ? #scaleId : #scaleName")
     public ClinicalScaleResponse getScaleDetail(UUID scaleId, String scaleName) {
         Optional<ClinicalScale> scale = (scaleId != null)
                 ? scaleRepository.findById(scaleId)
@@ -68,6 +73,7 @@ public class ClinicalScaleService {
     /**
      * Insert clinical scale into form (creates questions from scale template)
      */
+    @Transactional
     public ClinicalScaleInsertResponse insertScaleIntoForm(
             UUID formId,
             ClinicalScaleInsertRequest request) {
@@ -129,6 +135,7 @@ public class ClinicalScaleService {
     /**
      * Calculate score from answers
      */
+    @Transactional
     public ClinicalScaleScoreResponse calculateScore(
             UUID scaleId,
             ClinicalScaleScoreRequest request) {

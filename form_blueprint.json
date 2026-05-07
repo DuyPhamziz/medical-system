@@ -1,0 +1,2409 @@
+[
+  {
+    "excel_row": 6,
+    "no": "2",
+    "title": "2. số điện thoại",
+    "section": "2. số điện thoại",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": true
+  },
+  {
+    "excel_row": 7,
+    "no": "3",
+    "title": "3. Tuổi",
+    "section": "3. Tuổi",
+    "type": "date",
+    "options_count": 1,
+    "options_preview": [
+      "nhập ngày/tháng/năm sinh"
+    ],
+    "ai_indicator": "AGE",
+    "is_pii": false
+  },
+  {
+    "excel_row": 8,
+    "no": "4",
+    "title": "4. Giới",
+    "section": "4. Giới",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 9,
+    "no": "5",
+    "title": "4.1 Giới tính sinh học",
+    "section": "4.1 Giới tính sinh học",
+    "type": "single_choice",
+    "options_count": 2,
+    "options_preview": [
+      "nam",
+      "nữ"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 10,
+    "no": "6",
+    "title": "4.2 Giới tính tâm lý",
+    "section": "4.2 Giới tính tâm lý",
+    "type": "single_choice",
+    "options_count": 3,
+    "options_preview": [
+      "nam",
+      "nữ",
+      "khác/ chưa rõ:"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 11,
+    "no": "7",
+    "title": "4.3 Can thiệp giới tính",
+    "section": "4.3 Can thiệp giới tính",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 12,
+    "no": "8",
+    "title": "4.3.1 Đã phẫu thuật",
+    "section": "4.3.1 Đã phẫu thuật",
+    "type": "single_choice",
+    "options_count": 2,
+    "options_preview": [
+      "có",
+      "không"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 13,
+    "no": "9",
+    "title": "4.3.2 Đang sử dụng hormon",
+    "section": "4.3.2 Đang sử dụng hormon",
+    "type": "single_choice",
+    "options_count": 2,
+    "options_preview": [
+      "có",
+      "không"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 14,
+    "no": "10",
+    "title": "4.3.3 khác",
+    "section": "4.3.3 khác",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 15,
+    "no": "11",
+    "title": "5. Nghề nghiệp",
+    "section": "5. Nghề nghiệp",
+    "type": "single_choice",
+    "options_count": 1,
+    "options_preview": [
+      "Tham khảo bảng 1 phụ lục 6\nDạng bảng: ngang (tính chất nghề nghiệp) x cột (nghề nghiệp)\nCột (nghề nghiệp): \nNgang (tính chất nghề nghiệp): câu trả lời lựa chọn với 3 mức độ: nhẹ - trung bình - nặng"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 16,
+    "no": "12",
+    "title": "5.1 tính chất nghề nghiệp",
+    "section": "5.1 tính chất nghề nghiệp",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 17,
+    "no": "13",
+    "title": "- Áp lực tâm lý/tinh thần",
+    "section": "5.1 tính chất nghề nghiệp",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 18,
+    "no": "14",
+    "title": "- Gắng sức thể chất",
+    "section": "5.1 tính chất nghề nghiệp",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 19,
+    "no": "15",
+    "title": "- Làm việc ban đêm, xoay ca không cố định",
+    "section": "5.1 tính chất nghề nghiệp",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 20,
+    "no": "16",
+    "title": "- Làm việc trong môi trường ồn",
+    "section": "5.1 tính chất nghề nghiệp",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 21,
+    "no": "17",
+    "title": "- Tiếp xúc bụi",
+    "section": "5.1 tính chất nghề nghiệp",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 22,
+    "no": "18",
+    "title": "- Tiếp xúc hóa chất",
+    "section": "5.1 tính chất nghề nghiệp",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 23,
+    "no": "19",
+    "title": "- Tiếp xúc bức xạ / tia sáng mạnh",
+    "section": "5.1 tính chất nghề nghiệp",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 24,
+    "no": "20",
+    "title": "- Nhiệt độ khắc nghiệt",
+    "section": "5.1 tính chất nghề nghiệp",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 25,
+    "no": "21",
+    "title": "- Tiếp xúc vi sinh vật / dịch cơ thể",
+    "section": "5.1 tính chất nghề nghiệp",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 26,
+    "no": "22",
+    "title": "- Làm việc ngoài trời",
+    "section": "5.1 tính chất nghề nghiệp",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 27,
+    "no": "23",
+    "title": "- Rung, rung lắc từ thiết bị",
+    "section": "5.1 tính chất nghề nghiệp",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 28,
+    "no": "24",
+    "title": "- Ánh sáng kém hoặc quá mạnh",
+    "section": "5.1 tính chất nghề nghiệp",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 29,
+    "no": "25",
+    "title": "- Không được đào tạo đầy đủ về an toàn",
+    "section": "5.1 tính chất nghề nghiệp",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 30,
+    "no": "26",
+    "title": "- Khác: ghi rõ",
+    "section": "5.1 tính chất nghề nghiệp",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 31,
+    "no": "27",
+    "title": "5.2 Ghi nhận khác",
+    "section": "5.2 Ghi nhận khác",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 32,
+    "no": "28",
+    "title": "6. Hoạt động thể lực",
+    "section": "6. Hoạt động thể lực",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 33,
+    "no": "29",
+    "title": "6.1 lối sổng tỉnh tại",
+    "section": "6.1 lối sổng tỉnh tại",
+    "type": "text",
+    "options_count": 1,
+    "options_preview": [
+      "số giờ:"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 34,
+    "no": "30",
+    "title": "6.2 Mức hoạt đông thể lực",
+    "section": "6.2 Mức hoạt đông thể lực",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 35,
+    "no": "31",
+    "title": "6.2.1 hoạt động  thể lực cường độ mức độ trung bình",
+    "section": "6.2.1 hoạt động  thể lực cường độ mức độ trung bình",
+    "type": "single_choice",
+    "options_count": 2,
+    "options_preview": [
+      "Có",
+      "không có hoạt động nào."
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 36,
+    "no": "32",
+    "title": "6.2.1.1 tần suất",
+    "section": "6.2.1.1 tần suất",
+    "type": "text",
+    "options_count": 1,
+    "options_preview": [
+      "số ngày"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 37,
+    "no": "33",
+    "title": "6.2.1.2 thơi gian",
+    "section": "6.2.1.2 thơi gian",
+    "type": "text",
+    "options_count": 1,
+    "options_preview": [
+      "số phút"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 38,
+    "no": "34",
+    "title": "6.2.2 hoạt động  thể lực cường độ mức độ nặng",
+    "section": "6.2.2 hoạt động  thể lực cường độ mức độ nặng",
+    "type": "single_choice",
+    "options_count": 2,
+    "options_preview": [
+      "Có",
+      "không có hoạt động nào."
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 39,
+    "no": "35",
+    "title": "6.2.2.1 tần suất",
+    "section": "6.2.2.1 tần suất",
+    "type": "text",
+    "options_count": 1,
+    "options_preview": [
+      "số ngày"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 40,
+    "no": "36",
+    "title": "6.2.2.2 thơi gian",
+    "section": "6.2.2.2 thơi gian",
+    "type": "text",
+    "options_count": 1,
+    "options_preview": [
+      "số phút"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 41,
+    "no": "37",
+    "title": "7. Tình trạng hôn nhân",
+    "section": "7. Tình trạng hôn nhân",
+    "type": "multiple_choice",
+    "options_count": 7,
+    "options_preview": [
+      "độc thân (Chưa từng kết hôn, Sống 1 mình hoặc với gia đình gốc)",
+      "đã kết hôn (chung sống vợ chồng ổn định, quan hệ ổn định)",
+      "ly thân (vẫn còn hôn nhân pháp lý, nhưng không sống chung)"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 42,
+    "no": "38",
+    "title": "8. Kinh nguyệt",
+    "section": "8. Kinh nguyệt",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 43,
+    "no": "39",
+    "title": "8.1 Tuổi có kinh lần dầu",
+    "section": "8.1 Tuổi có kinh lần dầu",
+    "type": "number",
+    "options_count": 1,
+    "options_preview": [
+      "số Tuổi"
+    ],
+    "ai_indicator": "AGE",
+    "is_pii": false
+  },
+  {
+    "excel_row": 44,
+    "no": "40",
+    "title": "8.2 chu kỳ kinh nguyệt hiện tại",
+    "section": "8.2 chu kỳ kinh nguyệt hiện tại",
+    "type": "multiple_choice",
+    "options_count": 6,
+    "options_preview": [
+      "Đều: ổn định 21-35 ngày",
+      "Không đều: lúc có/không, sớm/trễ thất thường",
+      "Đã mãn kinh: (ngưng kinh >12 tháng)"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 45,
+    "no": "41",
+    "title": "8.3 Triệu chứng kinh nguyệt",
+    "section": "8.3 Triệu chứng kinh nguyệt",
+    "type": "multiple_choice",
+    "options_count": 7,
+    "options_preview": [
+      "Không có gì bất thường",
+      "Đau bụng nhiều (đau gây ảnh hưởng đến sinh hoạt và công việc)",
+      ". Rong kinh (kinh kéo dài >7 ngày)"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 46,
+    "no": "42",
+    "title": "8.4 tuổi mãn kinh",
+    "section": "8.4 tuổi mãn kinh",
+    "type": "number",
+    "options_count": 1,
+    "options_preview": [
+      "số tuổi"
+    ],
+    "ai_indicator": "AGE",
+    "is_pii": false
+  },
+  {
+    "excel_row": 47,
+    "no": "43",
+    "title": "8.5 Ghi nhận khác",
+    "section": "8.5 Ghi nhận khác",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 48,
+    "no": "44",
+    "title": "9. Tiền sử sản khoa",
+    "section": "9. Tiền sử sản khoa",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 49,
+    "no": "45",
+    "title": "9.0 Tiền sử mang thai",
+    "section": "9.0 Tiền sử mang thai",
+    "type": "single_choice",
+    "options_count": 2,
+    "options_preview": [
+      "có",
+      "chưa."
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 50,
+    "no": "46",
+    "title": "9.1 Tổng số lần sang con đủ tháng",
+    "section": "9.1 Tổng số lần sang con đủ tháng",
+    "type": "text",
+    "options_count": 1,
+    "options_preview": [
+      "số lần"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 51,
+    "no": "47",
+    "title": "9.2 số lần sanh con thiếu tháng",
+    "section": "9.2 số lần sanh con thiếu tháng",
+    "type": "text",
+    "options_count": 1,
+    "options_preview": [
+      "số lần"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 52,
+    "no": "48",
+    "title": "9.3 số lần sẩy thai, thai lưu, phá thai, thai ngoài tử cung",
+    "section": "9.3 số lần sẩy thai, thai lưu, phá thai, thai ngoài tử cung",
+    "type": "text",
+    "options_count": 1,
+    "options_preview": [
+      "số lần"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 53,
+    "no": "49",
+    "title": "9.4 số con hiện tại còn sống",
+    "section": "9.4 số con hiện tại còn sống",
+    "type": "text",
+    "options_count": 1,
+    "options_preview": [
+      "số con"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 54,
+    "no": "50",
+    "title": "9.5 Sanh mổ",
+    "section": "9.5 Sanh mổ",
+    "type": "single_choice",
+    "options_count": 3,
+    "options_preview": [
+      "chưa từng",
+      "1 lần",
+      ">=2 lần"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 55,
+    "no": "51",
+    "title": "9.6 các thủ thuật khác",
+    "section": "9.6 các thủ thuật khác",
+    "type": "multiple_choice",
+    "options_count": 6,
+    "options_preview": [
+      "Chưa từng",
+      "Sinh thường có can thiệp (forceps / giác hút)",
+      "khâu cổ tử cung"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 56,
+    "no": "52",
+    "title": "9.7 Ghi nhận khác",
+    "section": "9.7 Ghi nhận khác",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 57,
+    "no": "53",
+    "title": "10. Hoạt động tính dục",
+    "section": "10. Hoạt động tính dục",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 58,
+    "no": "54",
+    "title": "10.1 Hoạt động tình dục",
+    "section": "10.1 Hoạt động tình dục",
+    "type": "text",
+    "options_count": 4,
+    "options_preview": [
+      "lựa chon:",
+      "chưa từng quan hệ",
+      "có quan hệ, hiện không còn (không có hoạt động tình dục trong 12 tháng qua)"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 59,
+    "no": "55",
+    "title": "10.2 Số lượng bạn tình trong 12 tháng qua",
+    "section": "10.2 Số lượng bạn tình trong 12 tháng qua",
+    "type": "single_choice",
+    "options_count": 3,
+    "options_preview": [
+      "1",
+      "2-3",
+      ">=4"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 60,
+    "no": "56",
+    "title": "10.3 Sử dụng biện pháp bảo vệ",
+    "section": "10.3 Sử dụng biện pháp bảo vệ",
+    "type": "single_choice",
+    "options_count": 3,
+    "options_preview": [
+      "luôn luôn",
+      "thỉnh thoảng,",
+      "không bao giờ"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 61,
+    "no": "57",
+    "title": "10.4 Quan hệ bạn tình nguy cơ cao",
+    "section": "10.4 Quan hệ bạn tình nguy cơ cao",
+    "type": "multiple_choice",
+    "options_count": 3,
+    "options_preview": [
+      "có",
+      "không",
+      "khác:"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 62,
+    "no": "58",
+    "title": "10.5 Bệnh lý STI",
+    "section": "10.5 Bệnh lý STI",
+    "type": "multiple_choice",
+    "options_count": 4,
+    "options_preview": [
+      "từng mắc STI",
+      "có triệu chứng nghi STI: loét, đau, tiểu buốt, khí hư...)",
+      "không có"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 63,
+    "no": "59",
+    "title": "10.6 Ghi nhận khác",
+    "section": "10.6 Ghi nhận khác",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 64,
+    "no": "60",
+    "title": "11. Chiều cao",
+    "section": "11. Chiều cao",
+    "type": "text",
+    "options_count": 1,
+    "options_preview": [
+      "sô cm"
+    ],
+    "ai_indicator": "HEIGHT",
+    "is_pii": false
+  },
+  {
+    "excel_row": 65,
+    "no": "61",
+    "title": "12. cân nặng",
+    "section": "12. cân nặng",
+    "type": "number",
+    "options_count": 1,
+    "options_preview": [
+      "số kg"
+    ],
+    "ai_indicator": "WEIGHT",
+    "is_pii": false
+  },
+  {
+    "excel_row": 66,
+    "no": "62",
+    "title": "12.1 thay đổi cân nặng",
+    "section": "12.1 thay đổi cân nặng",
+    "type": "single_choice",
+    "options_count": 5,
+    "options_preview": [
+      "Không thay đổi",
+      "Không rõ",
+      "tăng cân/giảm cân nhẹ"
+    ],
+    "ai_indicator": "WEIGHT",
+    "is_pii": false
+  },
+  {
+    "excel_row": 67,
+    "no": "63",
+    "title": "12.2 thay đổi cân nặng cụ thể",
+    "section": "12.2 thay đổi cân nặng cụ thể",
+    "type": "number",
+    "options_count": 1,
+    "options_preview": [
+      "số kg"
+    ],
+    "ai_indicator": "WEIGHT",
+    "is_pii": false
+  },
+  {
+    "excel_row": 68,
+    "no": "64",
+    "title": "12.3. mốc thời gian thay đổi cân nặng",
+    "section": "12.3. mốc thời gian thay đổi cân nặng",
+    "type": "single_choice",
+    "options_count": 4,
+    "options_preview": [
+      "<1 tháng",
+      "1-6 tháng",
+      "6-12 tháng"
+    ],
+    "ai_indicator": "WEIGHT",
+    "is_pii": false
+  },
+  {
+    "excel_row": 69,
+    "no": "65",
+    "title": "13. vòng eo",
+    "section": "13. vòng eo",
+    "type": "number",
+    "options_count": 1,
+    "options_preview": [
+      "số cm"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 70,
+    "no": "66",
+    "title": "14. Huyết áp tâm thu trung bình hiện tại",
+    "section": "14. Huyết áp tâm thu trung bình hiện tại",
+    "type": "number",
+    "options_count": 1,
+    "options_preview": [
+      "mmhg"
+    ],
+    "ai_indicator": "BLOOD_PRESSURE",
+    "is_pii": false
+  },
+  {
+    "excel_row": 71,
+    "no": "67",
+    "title": "15. chế độ ăn uống",
+    "section": "15. chế độ ăn uống",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 72,
+    "no": "68",
+    "title": "15.1. Chế độ ăn đặc biệt",
+    "section": "15.1. Chế độ ăn đặc biệt",
+    "type": "multiple_choice",
+    "options_count": 4,
+    "options_preview": [
+      "không",
+      "ăn chay (>10 ngày/ tháng)",
+      "keto"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 73,
+    "no": "69",
+    "title": "15.2 số bữa ăn chính  trong ngày",
+    "section": "15.2 số bữa ăn chính  trong ngày",
+    "type": "multiple_choice",
+    "options_count": 4,
+    "options_preview": [
+      ">=3 bữa",
+      "2 bữa",
+      "<=1/hay bỏ bữa"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 74,
+    "no": "70",
+    "title": "15.3 cấu trúc bữa ăn thường ngày",
+    "section": "15.3 cấu trúc bữa ăn thường ngày",
+    "type": "multiple_choice",
+    "options_count": 4,
+    "options_preview": [
+      "đầy đủ, đa dạng",
+      "Thiếu 1 nhóm thường xuyên: ghi rõ nhóm thiếu",
+      "ăn lệch/đơn điệu: ghi rõ nhóm ăn lệch"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 75,
+    "no": "71",
+    "title": "15.4 Rau và trái cây",
+    "section": "15.4 Rau và trái cây",
+    "type": "single_choice",
+    "options_count": 2,
+    "options_preview": [
+      "mỗi ngày",
+      "không thường xuyên"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 76,
+    "no": "72",
+    "title": "15.5 Đồ chiên xào nhiều dầu mỡ/ thực phẩm ăn nhanh",
+    "section": "15.5 Đồ chiên xào nhiều dầu mỡ/ thực phẩm ăn nhanh",
+    "type": "single_choice",
+    "options_count": 3,
+    "options_preview": [
+      "ít/hiếm khi",
+      "2-3 lần/tuần",
+      "gần như mỗi ngày"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 77,
+    "no": "73",
+    "title": "15.6 Đồ ngọt, nước ngọt, trà sữa",
+    "section": "15.6 Đồ ngọt, nước ngọt, trà sữa",
+    "type": "single_choice",
+    "options_count": 3,
+    "options_preview": [
+      "ít/hiếm khi",
+      "2-3 lần/tuần",
+      "gần như mỗi ngày"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 78,
+    "no": "74",
+    "title": "15.7 Ghi nhận khác",
+    "section": "15.7 Ghi nhận khác",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 79,
+    "no": "75",
+    "title": "16.  sử dụng bia rượu",
+    "section": "16.  sử dụng bia rượu",
+    "type": "single_choice",
+    "options_count": 2,
+    "options_preview": [
+      "Có",
+      "Chưa bao giờ"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 80,
+    "no": "76",
+    "title": "16.1. tần suất sử dụng bia rượu",
+    "section": "16.1. tần suất sử dụng bia rượu",
+    "type": "single_choice",
+    "options_count": 5,
+    "options_preview": [
+      "Không bao giờ",
+      "≤ 1 lần/tháng",
+      "2 - 4 lần/tháng"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 81,
+    "no": "77",
+    "title": "16.2 Số lượng uống bia rượu trong ngày",
+    "section": "16.2 Số lượng uống bia rượu trong ngày",
+    "type": "single_choice",
+    "options_count": 5,
+    "options_preview": [
+      "1 - 2 đơn vị cồn",
+      "3 - 4 đơn vị cồn",
+      "5 - 6 đơn vị cồn"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 82,
+    "no": "78",
+    "title": "16.3 tần suất uống bia rượu ở mứa có hại",
+    "section": "16.3 tần suất uống bia rượu ở mứa có hại",
+    "type": "single_choice",
+    "options_count": 5,
+    "options_preview": [
+      "Không bao giờ",
+      "Ít hơn hằng tháng",
+      "Hằng tháng"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 83,
+    "no": "79",
+    "title": "16.4 Ghi nhận khác",
+    "section": "16.4 Ghi nhận khác",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 84,
+    "no": "80",
+    "title": "17. Hút thuốc lá",
+    "section": "17. Hút thuốc lá",
+    "type": "single_choice",
+    "options_count": 3,
+    "options_preview": [
+      "chưa từng hút,",
+      "đã từng hút nhưng đã bỏ,",
+      "đang hút"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 85,
+    "no": "81",
+    "title": "17.1 thời gian ngưng hút",
+    "section": "17.1 thời gian ngưng hút",
+    "type": "text",
+    "options_count": 4,
+    "options_preview": [
+      "Lụa chọn",
+      "<1 năm",
+      "1-5 năm"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 86,
+    "no": "82",
+    "title": "17.2 Thơi gian hút",
+    "section": "17.2 Thơi gian hút",
+    "type": "text",
+    "options_count": 1,
+    "options_preview": [
+      "sô năm"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 87,
+    "no": "83",
+    "title": "17.3 số điếu/ngày",
+    "section": "17.3 số điếu/ngày",
+    "type": "text",
+    "options_count": 1,
+    "options_preview": [
+      "số điếu/ngày"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 88,
+    "no": "84",
+    "title": "17.4 tầm soát copd bộ câu hỏi GOLD",
+    "section": "17.4 tầm soát copd bộ câu hỏi GOLD",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 89,
+    "no": "85",
+    "title": "17.4.1 triệu chứng ho",
+    "section": "17.4.1 triệu chứng ho",
+    "type": "single_choice",
+    "options_count": 2,
+    "options_preview": [
+      "có",
+      "không"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 90,
+    "no": "86",
+    "title": "17.4.1 triệu chứng khạc đờm",
+    "section": "17.4.1 triệu chứng khạc đờm",
+    "type": "single_choice",
+    "options_count": 2,
+    "options_preview": [
+      "có",
+      "không"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 91,
+    "no": "87",
+    "title": "17.4.1 triệu chứng khó thở",
+    "section": "17.4.1 triệu chứng khó thở",
+    "type": "single_choice",
+    "options_count": 2,
+    "options_preview": [
+      "có",
+      "không"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 92,
+    "no": "88",
+    "title": "17.5 Ghi nhận khác",
+    "section": "17.5 Ghi nhận khác",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 93,
+    "no": "89",
+    "title": "18: Các chất kích thích khác",
+    "section": "18: Các chất kích thích khác",
+    "type": "single_choice",
+    "options_count": 3,
+    "options_preview": [
+      "chưa từng",
+      "đã từng sử dụng, hiện không (Không sử dụng trong 12 tháng)",
+      "đang sử dụng (có sử dụng trong 12 tháng)"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 94,
+    "no": "90",
+    "title": "18.1 tần suất (3 tháng gần nhất)",
+    "section": "18.1 tần suất (3 tháng gần nhất)",
+    "type": "single_choice",
+    "options_count": 4,
+    "options_preview": [
+      "Không sử dụng",
+      "Không thường xuyên,",
+      "≥ 1 lần/tuần"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 95,
+    "no": "91",
+    "title": "18.2 dấu hiệu mất kiểm soát",
+    "section": "18.2 dấu hiệu mất kiểm soát",
+    "type": "single_choice",
+    "options_count": 2,
+    "options_preview": [
+      "có",
+      ". không"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 96,
+    "no": "92",
+    "title": "18.3 tiêm chích chất kích thích",
+    "section": "18.3 tiêm chích chất kích thích",
+    "type": "single_choice",
+    "options_count": 1,
+    "options_preview": [
+      "có, 2 không"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 97,
+    "no": "93",
+    "title": "18.4 Ghi nhận khác",
+    "section": "18.4 Ghi nhận khác",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 98,
+    "no": "94",
+    "title": "19.  giấc ngủ",
+    "section": "19.  giấc ngủ",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 99,
+    "no": "95",
+    "title": "19.1 thời gian giấc ngủ",
+    "section": "19.1 thời gian giấc ngủ",
+    "type": "text",
+    "options_count": 1,
+    "options_preview": [
+      "số giờ"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 100,
+    "no": "96",
+    "title": "19.2 chất lượng giấc ngủ",
+    "section": "19.2 chất lượng giấc ngủ",
+    "type": "single_choice",
+    "options_count": 3,
+    "options_preview": [
+      "Tốt (ngủ ngon, tỉnh dậy khoẻ)",
+      "Không tốt (khó ngủ / hay tỉnh / dậy mệt)",
+      "Kém rõ rệt (mất ngủ thường xuyên)"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 101,
+    "no": "97",
+    "title": "19.3 Yếu tố ảnh hưởng giấc ngủ",
+    "section": "19.3 Yếu tố ảnh hưởng giấc ngủ",
+    "type": "multiple_choice",
+    "options_count": 7,
+    "options_preview": [
+      "Đi tiểu đêm / tiểu nhiều lần",
+      "Đau / khó thở / ho",
+      "Lo âu, suy nghĩ nhiều, stress"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 102,
+    "no": "98",
+    "title": "19.4 Dấu hiệu nguy cơ cao liên quan giấc ngủ",
+    "section": "19.4 Dấu hiệu nguy cơ cao liên quan giấc ngủ",
+    "type": "multiple_choice",
+    "options_count": 5,
+    "options_preview": [
+      "Ngáy to / nghi ngưng thở khi ngủ (theo ghi nhận của người khác)",
+      "Buồn ngủ ban ngày ảnh hưởng sinh hoạt",
+      "Dùng thuốc ngủ hoặc rượu để ngủ thường xuyên"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 103,
+    "no": "99",
+    "title": "19.5 Ghi nhận khác",
+    "section": "19.5 Ghi nhận khác",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 104,
+    "no": "100",
+    "title": "20. đánh theo thang đo PHQ 9 và GAD 7",
+    "section": "20. đánh theo thang đo PHQ 9 và GAD 7",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 105,
+    "no": "101",
+    "title": "20.1 Tầm soát về trầm cảm",
+    "section": "20.1 Tầm soát về trầm cảm",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 106,
+    "no": "102",
+    "title": "20.1.1 ít hứng thú, niềm vui",
+    "section": "20.1.1 ít hứng thú, niềm vui",
+    "type": "single_choice",
+    "options_count": 4,
+    "options_preview": [
+      "Hầu như không",
+      "Một vài ngày",
+      "Hơn một nửa số thời gian"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 107,
+    "no": "103",
+    "title": "20.1.2 Chán nản tuyệt vọng",
+    "section": "20.1.2 Chán nản tuyệt vọng",
+    "type": "single_choice",
+    "options_count": 4,
+    "options_preview": [
+      "Hầu như không",
+      "Một vài ngày",
+      "Hơn một nửa số thời gian"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 108,
+    "no": "104",
+    "title": "20.1.3 rối loạn giấc ngủ",
+    "section": "20.1.3 rối loạn giấc ngủ",
+    "type": "single_choice",
+    "options_count": 4,
+    "options_preview": [
+      "Hầu như không",
+      "Một vài ngày",
+      "Hơn một nửa số thời gian"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 109,
+    "no": "105",
+    "title": "20.1.4 mệt mỏi thiếu năng lượng",
+    "section": "20.1.4 mệt mỏi thiếu năng lượng",
+    "type": "single_choice",
+    "options_count": 4,
+    "options_preview": [
+      "Hầu như không",
+      "Một vài ngày",
+      "Hơn một nửa số thời gian"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 110,
+    "no": "106",
+    "title": "20.1.5 chán ăn hoặc ăn quá nhiều",
+    "section": "20.1.5 chán ăn hoặc ăn quá nhiều",
+    "type": "single_choice",
+    "options_count": 4,
+    "options_preview": [
+      "Hầu như không",
+      "Một vài ngày",
+      "Hơn một nửa số thời gian"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 111,
+    "no": "107",
+    "title": "20.1.6 cảm nhận tồi tệ thất bại",
+    "section": "20.1.6 cảm nhận tồi tệ thất bại",
+    "type": "single_choice",
+    "options_count": 4,
+    "options_preview": [
+      "Hầu như không",
+      "Một vài ngày",
+      "Hơn một nửa số thời gian"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 112,
+    "no": "108",
+    "title": "20.1.7 Khó tập trung",
+    "section": "20.1.7 Khó tập trung",
+    "type": "single_choice",
+    "options_count": 4,
+    "options_preview": [
+      "Hầu như không",
+      "Một vài ngày",
+      "Hơn một nửa số thời gian"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 113,
+    "no": "109",
+    "title": "20.1.8 chậm châp hoặc bồn chồn",
+    "section": "20.1.8 chậm châp hoặc bồn chồn",
+    "type": "single_choice",
+    "options_count": 4,
+    "options_preview": [
+      "Hầu như không",
+      "Một vài ngày",
+      "Hơn một nửa số thời gian"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 114,
+    "no": "110",
+    "title": "20.1.9 làm hại bản thân",
+    "section": "20.1.9 làm hại bản thân",
+    "type": "single_choice",
+    "options_count": 4,
+    "options_preview": [
+      "Hầu như không",
+      "Một vài ngày",
+      "Hơn một nửa số thời gian"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 115,
+    "no": "111",
+    "title": "20.2 tầm soát rối loạn lo âu",
+    "section": "20.2 tầm soát rối loạn lo âu",
+    "type": "single_choice",
+    "options_count": 4,
+    "options_preview": [
+      "Hầu như không",
+      "Một vài ngày",
+      "Hơn một nửa số thời gian"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 116,
+    "no": "112",
+    "title": "20.2.1 lo lắng, bồn chồn, cáo giận",
+    "section": "20.2.1 lo lắng, bồn chồn, cáo giận",
+    "type": "single_choice",
+    "options_count": 4,
+    "options_preview": [
+      "Hầu như không",
+      "Một vài ngày",
+      "Hơn một nửa số thời gian"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 117,
+    "no": "113",
+    "title": "20.2.2 kiềm chế lo lắng",
+    "section": "20.2.2 kiềm chế lo lắng",
+    "type": "single_choice",
+    "options_count": 4,
+    "options_preview": [
+      "Hầu như không",
+      "Một vài ngày",
+      "Hơn một nửa số thời gian"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 118,
+    "no": "114",
+    "title": "20.2.3 lo lắng quá nhiều",
+    "section": "20.2.3 lo lắng quá nhiều",
+    "type": "single_choice",
+    "options_count": 4,
+    "options_preview": [
+      "Hầu như không",
+      "Một vài ngày",
+      "Hơn một nửa số thời gian"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 119,
+    "no": "115",
+    "title": "20.2.4 Khó thư giãn",
+    "section": "20.2.4 Khó thư giãn",
+    "type": "single_choice",
+    "options_count": 4,
+    "options_preview": [
+      "Hầu như không",
+      "Một vài ngày",
+      "Hơn một nửa số thời gian"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 120,
+    "no": "116",
+    "title": "20.2.5 bồn chồn không ngồi yên",
+    "section": "20.2.5 bồn chồn không ngồi yên",
+    "type": "single_choice",
+    "options_count": 4,
+    "options_preview": [
+      "Hầu như không",
+      "Một vài ngày",
+      "Hơn một nửa số thời gian"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 121,
+    "no": "117",
+    "title": "20.2.6 bực bội kích thích",
+    "section": "20.2.6 bực bội kích thích",
+    "type": "single_choice",
+    "options_count": 4,
+    "options_preview": [
+      "Hầu như không",
+      "Một vài ngày",
+      "Hơn một nửa số thời gian"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 122,
+    "no": "118",
+    "title": "20.2.7 sợ hãi",
+    "section": "20.2.7 sợ hãi",
+    "type": "single_choice",
+    "options_count": 4,
+    "options_preview": [
+      "Hầu như không",
+      "Một vài ngày",
+      "Hơn một nửa số thời gian"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 123,
+    "no": "119",
+    "title": "20.3 ảnh hưởng cuộc sống",
+    "section": "20.3 ảnh hưởng cuộc sống",
+    "type": "text",
+    "options_count": 4,
+    "options_preview": [
+      "1. không khó khăn",
+      "Khó khăn phần nào",
+      "khó khăn nhiều"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 124,
+    "no": "120",
+    "title": "20.4 Ghi nhận khác",
+    "section": "20.4 Ghi nhận khác",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 125,
+    "no": "121",
+    "title": "21. Sử dụng thuốc",
+    "section": "21. Sử dụng thuốc",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 126,
+    "no": "122",
+    "title": "21.1 sử dụng thuốc hiện tại",
+    "section": "21.1 sử dụng thuốc hiện tại",
+    "type": "single_choice",
+    "options_count": 2,
+    "options_preview": [
+      "không có",
+      "có. ghi rõ thuốc đang dùng điều trị bệnh gì. gửi kèm toa thuốc, lọ chai vĩ nếu có."
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 127,
+    "no": "123",
+    "title": "21.2 Sử dụng thuốc dân gian / thuốc không rõ nguồn gốc",
+    "section": "21.2 Sử dụng thuốc dân gian / thuốc không rõ nguồn gốc",
+    "type": "multiple_choice",
+    "options_count": 4,
+    "options_preview": [
+      "Không",
+      "Có, < 4 tuần: mô tả loại đang dùng (cấu trả lời ngắn)",
+      "Có, ≥ 4 tuần: mô tả loại đang dùng (cấu trả lời ngắn)"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 128,
+    "no": "124",
+    "title": "21.3 Tiền sử sử dụng thuốc đặc biệt",
+    "section": "21.3 Tiền sử sử dụng thuốc đặc biệt",
+    "type": "multiple_choice",
+    "options_count": 5,
+    "options_preview": [
+      "Thuốc giảm đau dùng thường xuyên",
+      "Thuốc ngủ / an thần kéo dài",
+      "Kháng sinh dùng nhiều đợt / kéo dài"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 129,
+    "no": "125",
+    "title": "21.4 Tiền sử sử dụng corticorid kéo dài",
+    "section": "21.4 Tiền sử sử dụng corticorid kéo dài",
+    "type": "single_choice",
+    "options_count": 3,
+    "options_preview": [
+      "có",
+      "không",
+      "Nghi ngờ/ không rõ. nghi ngờ nếu có kiểu hình giống cushing, 21,2, 21,3 có sử dụng thuốc nhưng không rõ thành phần ở trong hoặc dùng thuốc giảm đau kéo dài"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 130,
+    "no": "126",
+    "title": "21.5 Ghi nhận khác",
+    "section": "21.5 Ghi nhận khác",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 131,
+    "no": "127",
+    "title": "22. Tiền sử gãy xương",
+    "section": "22. Tiền sử gãy xương",
+    "type": "text",
+    "options_count": 3,
+    "options_preview": [
+      "1. có",
+      "không",
+      "không nhớ/không rõ"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 132,
+    "no": "128",
+    "title": "22.1 Mức độ chấn thương gây gãy?",
+    "section": "22.1 Mức độ chấn thương gây gãy?",
+    "type": "multiple_choice",
+    "options_count": 3,
+    "options_preview": [
+      "Tự ngã cùng mặt phẳng / va chạm nhẹ/ sinh hoạt thường ngày, va chạm nhẹ",
+      "Tai nạn giao thông, té cao >1m, lực mạnh",
+      "không rõ/không nhớ"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 133,
+    "no": "129",
+    "title": "23. Tiên sử bệnh tật",
+    "section": "23. Tiên sử bệnh tật",
+    "type": "multiple_choice",
+    "options_count": 1,
+    "options_preview": [
+      "tiền sử đại tháo đường thai kỳ\ntiền đái tháo đường\ncường giáp\nrối loạn lipid máu/mỡ máu\nsuy sinh dục: bệnh gây giảm hormon sinh dục\nHội chứng buồng trứng đa nang\nUng thư\nCOPD\nNgưng thở khi ngủ\nsuy thận mạn\nxơ gan\nviêm gan B\nviêm gan C\nBệnh Celiac (không dung nạp gluten)\ncrohn \nviêm loét đại tràng mạn tính\nGan nhiễm mỡ: cần phân loại ALD, NAFLD (NASH, NAFL). Cần bs đánh giá phân loại \nloãng xương\nviêm khớp dạng thấp\nviêm cột sống dính khớp\nHIV\nlupus ban đỏ\nghep tạng\nvẩy nến"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 134,
+    "no": "130",
+    "title": "23.1 Bậc 1. hỏi về bệnh mạn tính và bệnh mà KH nhớ",
+    "section": "23.1 Bậc 1. hỏi về bệnh mạn tính và bệnh mà KH nhớ",
+    "type": "text",
+    "options_count": 1,
+    "options_preview": [
+      "KH nhớ bệnh nào thì tich vào danh sách bên dưới và khai thác 5 phần thông tin"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 135,
+    "no": "131",
+    "title": "23.2 bậc 2: hỏi theo từng chuyên khoa",
+    "section": "23.2 bậc 2: hỏi theo từng chuyên khoa",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 136,
+    "no": "132",
+    "title": "23.2.1 Tim - mạch máu",
+    "section": "23.2.1 Tim - mạch máu",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": "BLOOD_PRESSURE",
+    "is_pii": false
+  },
+  {
+    "excel_row": 137,
+    "no": "133",
+    "title": "23.2.2 Nôi tiết",
+    "section": "23.2.2 Nôi tiết",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 138,
+    "no": "134",
+    "title": "23.2.3 U - Ung thư",
+    "section": "23.2.3 U - Ung thư",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 139,
+    "no": "135",
+    "title": "23.2.4 Hô hấp",
+    "section": "23.2.4 Hô hấp",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 140,
+    "no": "136",
+    "title": "23.2.5 thận - tiết niệu",
+    "section": "23.2.5 thận - tiết niệu",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 141,
+    "no": "137",
+    "title": "23.2.6 Bệnh gan - tiêu hóa",
+    "section": "23.2.6 Bệnh gan - tiêu hóa",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 142,
+    "no": "138",
+    "title": "23.2.7 tam thần - thần kinh",
+    "section": "23.2.7 tam thần - thần kinh",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 143,
+    "no": "139",
+    "title": "23.2.8 cơ xương khớp",
+    "section": "23.2.8 cơ xương khớp",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 144,
+    "no": "140",
+    "title": "23.2.9 Ngoại khoa- phẫu thuật-thủ thuật",
+    "section": "23.2.9 Ngoại khoa- phẫu thuật-thủ thuật",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 145,
+    "no": "141",
+    "title": "23.2.10 truyền nhiễm",
+    "section": "23.2.10 truyền nhiễm",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 146,
+    "no": "142",
+    "title": "23.2.11 miễn dịch dị ứng",
+    "section": "23.2.11 miễn dịch dị ứng",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 147,
+    "no": "143",
+    "title": "23.2.12 huyết học",
+    "section": "23.2.12 huyết học",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 148,
+    "no": "144",
+    "title": "23.2.13 mắt",
+    "section": "23.2.13 mắt",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 149,
+    "no": "145",
+    "title": "23.2.14 da liễu",
+    "section": "23.2.14 da liễu",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 150,
+    "no": "146",
+    "title": "23.2.15. tai mũi họng",
+    "section": "23.2.15. tai mũi họng",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 151,
+    "no": "147",
+    "title": "23.3 Ghi nhận khác",
+    "section": "23.3 Ghi nhận khác",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 152,
+    "no": "148",
+    "title": "24. tiền sử dị ứng",
+    "section": "24. tiền sử dị ứng",
+    "type": "multiple_choice",
+    "options_count": 5,
+    "options_preview": [
+      "dị ứng thuốc. ghi rõ loại dị ứng",
+      "dị ứng thức ăn. ghi rõ loại dị ứng",
+      "phản ứng sau tiêm chủng. ghi rõ triệu chứng"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 153,
+    "no": "149",
+    "title": "25. Tiền sử tiêm chủng",
+    "section": "25. Tiền sử tiêm chủng",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 154,
+    "no": "150",
+    "title": "25.1 TCMR",
+    "section": "25.1 TCMR",
+    "type": "single_choice",
+    "options_count": 4,
+    "options_preview": [
+      "Đầy đủ",
+      "Chưa tiêm / tiêm không đầy đủ",
+      "không rõ"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 155,
+    "no": "151",
+    "title": "25.2 Vaccin ngoài chưa trình tiêm chủng mở rông",
+    "section": "25.2 Vaccin ngoài chưa trình tiêm chủng mở rông",
+    "type": "multiple_choice",
+    "options_count": 16,
+    "options_preview": [
+      "- nhiều lựa chọn: (Mỗi vaccn khi tích và hiện mục phụ hỏi thêm nếu có)",
+      "Cúm mùa trong năm nay",
+      "COVID-19"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 156,
+    "no": "152",
+    "title": "25.3 Ghi nhận khác",
+    "section": "25.3 Ghi nhận khác",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 157,
+    "no": "153",
+    "title": "26. cận lâm sàng",
+    "section": "26. cận lâm sàng",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 158,
+    "no": "154",
+    "title": "26.1 kết quả xét nghiệm",
+    "section": "26.1 kết quả xét nghiệm",
+    "type": "scored",
+    "options_count": 12,
+    "options_preview": [
+      "các chỉ số cố định, ưu tiên có cả đơn vị mmol/L và mg/dl. thêm quyền cho nhập thêm các xét nghiệm. Mỗi xét nghiệm thêm vào sẽ hiện 4 cột\ncột 1: tên xét nghiệm \ncột 2: kết quả \nCột 3: đơn vị \nCột 4: ghi chú khác \ncác xét nghiệm bên dưới có dùng để tính toán",
+      "Cholesterol total:",
+      "triglyceride:"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 159,
+    "no": "155",
+    "title": "26.2 các kết quả cận lâm sàng khác: siêu âm, x quang, điện tim, CT",
+    "section": "26.2 các kết quả cận lâm sàng khác: siêu âm, x quang, điện tim, CT",
+    "type": "scored",
+    "options_count": 5,
+    "options_preview": [
+      "CB CSKH thực hiện check các kết quả CLS Kh gửi và tik vào\nBệnh tim mạch do xơ vữa trên cận lâm sàng:",
+      "chụp mạch vành có hẹp đáng kể",
+      "phát hiện mảng xơ vữa lớn trên siêu âm, CT,  MRI"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 160,
+    "no": "156",
+    "title": "26.3 Ghi nhận khác",
+    "section": "26.3 Ghi nhận khác",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 161,
+    "no": "157",
+    "title": "27 Tiền sử gia đình/ Cây phả hệ",
+    "section": "27 Tiền sử gia đình/ Cây phả hệ",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 162,
+    "no": "158",
+    "title": "27.1 Bước 1: khai thác tuổi giới của người thân bậc 1, bậc 2 (cha mẹ, anh chị em, con, ông bà)",
+    "section": "27.1 Bước 1: khai thác tuổi giới của người thân bậc 1, bậc 2 (cha mẹ, anh chị em, con, ông bà)",
+    "type": "pedigree",
+    "options_count": 1,
+    "options_preview": [
+      "Thành viên gia đình + năm sinh\ntrường hợp đã mất thì thêm năm mất + lý do mất"
+    ],
+    "ai_indicator": "AGE",
+    "is_pii": false
+  },
+  {
+    "excel_row": 163,
+    "no": "159",
+    "title": "27.2 Bước 2: hỏi bệnh tật theo list gợi ý. Nếu có bệnh lý nào thì kèm theo câu hỏi: tuổi mắc bệnh , ghi chú khác",
+    "section": "27.2 Bước 2: hỏi bệnh tật theo list gợi ý. Nếu có bệnh lý nào thì kèm theo câu hỏi: tuổi mắc bệnh , ghi chú khác",
+    "type": "multiple_choice",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": "AGE",
+    "is_pii": false
+  },
+  {
+    "excel_row": 164,
+    "no": "160",
+    "title": "27.3 Bước 3: những thành viên sống chung nhà, hỏi về lối sống hành vi ảnh hưởng KH, kinh tế ???  thuốc lá, bia rượu, nặng, chất kích thích...",
+    "section": "27.3 Bước 3: những thành viên sống chung nhà, hỏi về lối sống hành vi ảnh hưởng KH, kinh tế ???  thuốc lá, bia rượu, nặng, chất kích thích...",
+    "type": "multiple_choice",
+    "options_count": 7,
+    "options_preview": [
+      "Hút thuốc (thụ động / chủ động)",
+      "Rượu bia",
+      "Ăn mặn"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 165,
+    "no": "161",
+    "title": "27.4 Ghi nhận khác",
+    "section": "27.4 Ghi nhận khác",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 166,
+    "no": "162",
+    "title": "28. đánh giá về gia đình: rời rạc gắn bó: thang điểm appgar",
+    "section": "28. đánh giá về gia đình: rời rạc gắn bó: thang điểm appgar",
+    "type": "single_choice",
+    "options_count": 4,
+    "options_preview": [
+      "Có, hỗ trợ tốt",
+      "Có nhưng hạn chế",
+      "Ít hoặc không hỗ trợ"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 167,
+    "no": "163",
+    "title": "28.1 sự giúp đỡ",
+    "section": "28.1 sự giúp đỡ",
+    "type": "single_choice",
+    "options_count": 3,
+    "options_preview": [
+      "luôn luôn",
+      "thỉnh thoảng",
+      "hiếm khi"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 168,
+    "no": "164",
+    "title": "28.2 động viên, chia sẽ",
+    "section": "28.2 động viên, chia sẽ",
+    "type": "single_choice",
+    "options_count": 3,
+    "options_preview": [
+      "luôn luôn",
+      "thỉnh thoảng",
+      "hiếm khi"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 169,
+    "no": "165",
+    "title": "28.3 chấp thuận và ủng hộ",
+    "section": "28.3 chấp thuận và ủng hộ",
+    "type": "single_choice",
+    "options_count": 3,
+    "options_preview": [
+      "luôn luôn",
+      "thỉnh thoảng",
+      "hiếm khi"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 170,
+    "no": "166",
+    "title": "28.4 thể hiện tình cảm, đồng cảm",
+    "section": "28.4 thể hiện tình cảm, đồng cảm",
+    "type": "single_choice",
+    "options_count": 3,
+    "options_preview": [
+      "luôn luôn",
+      "thỉnh thoảng",
+      "hiếm khi"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 171,
+    "no": "167",
+    "title": "28.5 chăm sóc và chia sẽ với bản thân",
+    "section": "28.5 chăm sóc và chia sẽ với bản thân",
+    "type": "single_choice",
+    "options_count": 3,
+    "options_preview": [
+      "luôn luôn",
+      "thỉnh thoảng",
+      "hiếm khi"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 172,
+    "no": "168",
+    "title": "28.6 gia đình ảnh hưởng",
+    "section": "28.6 gia đình ảnh hưởng",
+    "type": "text",
+    "options_count": 2,
+    "options_preview": [
+      "1. có",
+      "không"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 173,
+    "no": "169",
+    "title": "28.7 Ghi nhận khác",
+    "section": "28.7 Ghi nhận khác",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 174,
+    "no": "170",
+    "title": "29. bộ công cụ SCREEM",
+    "section": "29. bộ công cụ SCREEM",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 175,
+    "no": "171",
+    "title": "29.1. hỗ trợ xã hội",
+    "section": "29.1. hỗ trợ xã hội",
+    "type": "single_choice",
+    "options_count": 3,
+    "options_preview": [
+      "Không",
+      "Có, nhưng ít / thỉnh thoảng",
+      "Có nhiều / thường xuyên"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 176,
+    "no": "172",
+    "title": "29.2. Niêm tin/ ảnh hưởng từ người khác:",
+    "section": "29.2. Niêm tin/ ảnh hưởng từ người khác:",
+    "type": "single_choice",
+    "options_count": 3,
+    "options_preview": [
+      "Không",
+      "Có, nhưng ít / thỉnh thoảng",
+      "Có nhiều / thường xuyên"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 177,
+    "no": "173",
+    "title": "29.3. 3. Năng lực kinh tế:",
+    "section": "29.3. 3. Năng lực kinh tế:",
+    "type": "single_choice",
+    "options_count": 3,
+    "options_preview": [
+      "Không",
+      "Có, nhưng ít / thỉnh thoảng",
+      "Có nhiều / thường xuyên"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 178,
+    "no": "174",
+    "title": "29.4. Khả năng theo điều trị:",
+    "section": "29.4. Khả năng theo điều trị:",
+    "type": "single_choice",
+    "options_count": 3,
+    "options_preview": [
+      "Không",
+      "Có, nhưng ít / thỉnh thoảng",
+      "Có nhiều / thường xuyên"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 179,
+    "no": "175",
+    "title": "29.5. Tiếp cận y tế:",
+    "section": "29.5. Tiếp cận y tế:",
+    "type": "single_choice",
+    "options_count": 3,
+    "options_preview": [
+      "Không",
+      "Có, nhưng ít / thỉnh thoảng",
+      "Có nhiều / thường xuyên"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 180,
+    "no": "176",
+    "title": "29.6 Khả năng chi trả",
+    "section": "29.6 Khả năng chi trả",
+    "type": "text",
+    "options_count": 3,
+    "options_preview": [
+      "1. chấp nhận kiểm tra đầy đủ",
+      "Chỉ kiểm tra cốt lõi",
+      "chỉ kiểm tra khi thật cần thiết"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 181,
+    "no": "177",
+    "title": "29.7 Ghi nhận khác",
+    "section": "29.7 Ghi nhận khác",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 182,
+    "no": "178",
+    "title": "30. các triệu chứng/khó chịu hiện có\nMong muốn kỳ vọng của KH khi tham gia",
+    "section": "30. các triệu chứng/khó chịu hiện có\nMong muốn kỳ vọng của KH khi tham gia",
+    "type": "text",
+    "options_count": 0,
+    "options_preview": [],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 183,
+    "no": "179",
+    "title": "Kham lâm sàng",
+    "section": "Kham lâm sàng",
+    "type": "text",
+    "options_count": 2,
+    "options_preview": [
+      "1. có thực hiện",
+      "chưa thực hiện"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 184,
+    "no": "180",
+    "title": "Huyết áp",
+    "section": "Huyết áp",
+    "type": "number",
+    "options_count": 1,
+    "options_preview": [
+      "Hatthu/tattruong mmhg"
+    ],
+    "ai_indicator": "BLOOD_PRESSURE",
+    "is_pii": false
+  },
+  {
+    "excel_row": 185,
+    "no": "181",
+    "title": "Nhịp tim",
+    "section": "Nhịp tim",
+    "type": "text",
+    "options_count": 1,
+    "options_preview": [
+      "lần/ phút"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 186,
+    "no": "182",
+    "title": "Nhịp Thở",
+    "section": "Nhịp Thở",
+    "type": "text",
+    "options_count": 1,
+    "options_preview": [
+      "lần/phút"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 187,
+    "no": "183",
+    "title": "Nhiệt độ",
+    "section": "Nhiệt độ",
+    "type": "text",
+    "options_count": 1,
+    "options_preview": [
+      "oC"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 188,
+    "no": "184",
+    "title": "Sp02",
+    "section": "Sp02",
+    "type": "text",
+    "options_count": 1,
+    "options_preview": [
+      "%"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  },
+  {
+    "excel_row": 189,
+    "no": "185",
+    "title": "Khám lâm sàng các cơ quan:",
+    "section": "Khám lâm sàng các cơ quan:",
+    "type": "text",
+    "options_count": 1,
+    "options_preview": [
+      "câu trả lời ngắn: ghi nhận qua khám lâm sàng. \nnếu có bất thường/dấu hiệu lâm sàng thì ghi nhận theo hệ cơ quan. \nNếu không: hiện chưa ghi nhân bất thường"
+    ],
+    "ai_indicator": null,
+    "is_pii": false
+  }
+]

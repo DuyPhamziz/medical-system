@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { Alert, Box } from '@mui/material';
 import { evaluateCondition } from '@/lib/logic-evaluator';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface ConditionalQuestionWrapperProps {
   children: React.ReactNode;
@@ -15,103 +16,116 @@ interface ConditionalQuestionWrapperProps {
   onVisibilityChange?: (isVisible: boolean) => void;
 }
 
-export const ConditionalQuestionWrapper: React.FC<ConditionalQuestionWrapperProps> = ({
+export const ConditionalQuestionWrapper: React.FC<ConditionalQuestionWrapperProps> = React.memo(({
   children,
   logicRules = [],
   questionId,
   onVisibilityChange,
 }) => {
   const { control, getValues } = useFormContext();
-  const [isVisible, setIsVisible] = useState(true);
-  const [shouldBeRequired, setShouldBeRequired] = useState(false);
-  const [alertMessage, setAlertMessage] = useState<string | null>(null);
+  const visibleRef = useRef(true);
+  const requiredRef = useRef(false);
+  const alertRef = useRef<string | null>(null);
+  const onVisibilityChangeRef = useRef(onVisibilityChange);
+  onVisibilityChangeRef.current = onVisibilityChange;
 
   // Extract dependencies from logic rules to watch only necessary fields
   const dependencies = React.useMemo(() => {
     const deps = new Set<string>();
-    logicRules.forEach(rule => {
+    for (let i = 0; i < logicRules.length; i++) {
+      const rule = logicRules[i];
       const matches = rule.condition.match(/\{\{([^}]+)\}\}/g);
       if (matches) {
-        matches.forEach(m => deps.add(`answers.${m.replace(/\{\{|\}\}/g, '')}`));
+        for (let j = 0; j < matches.length; j++) {
+          deps.add(`answers.${matches[j].replace(/\{\{|\}\}/g, '')}`);
+        }
       }
-    });
+    }
     return Array.from(deps);
   }, [logicRules]);
 
   // Watch only specific dependencies instead of all form values
-  const watchedValues = useWatch({ 
-    control, 
-    name: dependencies.length > 0 ? (dependencies as any) : undefined 
+  useWatch({
+    control,
+    name: dependencies.length > 0 ? (dependencies as any) : undefined
   });
 
-  // Evaluate logic rules
-  useEffect(() => {
+  // Compute visibility state directly from form values on every render
+  // using getValues() which is already reactive via useWatch triggering re-renders
+  const { isVisible, shouldBeRequired, alertMessage } = React.useMemo(() => {
     if (!logicRules || logicRules.length === 0) {
-      if (!isVisible) {
-        setIsVisible(true);
-        if (onVisibilityChange) onVisibilityChange(true);
-      }
-      return;
+      return { isVisible: true, shouldBeRequired: false, alertMessage: null as string | null };
     }
 
     const allAnswers = getValues('answers') || {};
-    let finalVisibility = true; // Default to visible
+    let finalVisibility = true;
+    let alertMsg: string | null = null;
+    let nextRequired = false;
 
     const visibilityRule = logicRules.find(r => r.action === 'SHOW' || r.action === 'HIDE');
-
     if (visibilityRule) {
       const conditionMet = evaluateCondition(visibilityRule.condition, allAnswers);
-      if (visibilityRule.action === 'SHOW') {
-        finalVisibility = conditionMet;
-      } else if (visibilityRule.action === 'HIDE') {
-        finalVisibility = !conditionMet;
-      }
+      finalVisibility = visibilityRule.action === 'SHOW' ? conditionMet : !conditionMet;
     }
 
-    // Handle other actions like alerts or requirements if visible
-    let alertMsg: string | null = null;
-    let nextShouldBeRequired = false;
-
-    if(finalVisibility) {
-      for (const rule of logicRules) {
+    if (finalVisibility) {
+      for (let i = 0; i < logicRules.length; i++) {
+        const rule = logicRules[i];
         const conditionMet = evaluateCondition(rule.condition, allAnswers);
         if (conditionMet) {
-          if (rule.action === 'REQUIRE') nextShouldBeRequired = true;
+          if (rule.action === 'REQUIRE') nextRequired = true;
           if (rule.action === 'ALERT' && rule.message) alertMsg = rule.message;
         }
       }
     }
-    
-    // Only update state if values changed to prevent unnecessary re-renders
-    if (finalVisibility !== isVisible) {
-      setIsVisible(finalVisibility);
-      if (onVisibilityChange) {
-        onVisibilityChange(finalVisibility);
-      }
-    }
 
-    if (nextShouldBeRequired !== shouldBeRequired) {
-      setShouldBeRequired(nextShouldBeRequired);
-    }
+    return { isVisible: finalVisibility, shouldBeRequired: nextRequired, alertMessage: alertMsg };
+  }, [logicRules, getValues]);
 
-    if (alertMsg !== alertMessage) {
-      setAlertMessage(alertMsg);
+  // Notify parent only when visibility actually changes (stable callback ref)
+  useEffect(() => {
+    if (visibleRef.current !== isVisible) {
+      visibleRef.current = isVisible;
+      onVisibilityChangeRef.current?.(isVisible);
     }
-  }, [watchedValues, logicRules, getValues, onVisibilityChange, isVisible, shouldBeRequired, alertMessage]);
+  }, [isVisible]);
 
-  if (!isVisible) {
-    return null;
-  }
+  // Track required state change for future use
+  useEffect(() => {
+    requiredRef.current = shouldBeRequired;
+  }, [shouldBeRequired]);
+
+  useEffect(() => {
+    alertRef.current = alertMessage;
+  }, [alertMessage]);
 
   return (
-    <Box>
-      {alertMessage && (
-        <Alert severity="info" sx={{ mb: 2 }}>
-          {alertMessage}
-        </Alert>
+    <AnimatePresence>
+      {isVisible && (
+        <motion.div
+          key={questionId || 'unknown'}
+          initial={{ opacity: 0, y: -10, height: 0 }}
+          animate={{ opacity: 1, y: 0, height: 'auto' }}
+          exit={{ opacity: 0, y: -10, height: 0 }}
+          transition={{ duration: 0.25, ease: 'easeOut' }}
+          style={{ overflow: 'hidden' }}
+        >
+          <Box sx={{ mb: 2 }}>
+            {alertMessage && (
+              <Alert severity="info" sx={{ mb: 2 }}>
+                {alertMessage}
+              </Alert>
+            )}
+            {children}
+          </Box>
+        </motion.div>
       )}
-      {/* TODO: Pass shouldBeRequired to the child component if needed */}
-      {children}
-    </Box>
+    </AnimatePresence>
   );
-};
+}, (prevProps, nextProps) => {
+  // Custom comparator: only re-render if logic rules or questionId actually changed
+  if (prevProps.questionId !== nextProps.questionId) return false;
+  if (prevProps.logicRules !== nextProps.logicRules) return false;
+  if (prevProps.children !== nextProps.children) return false;
+  return true;
+});

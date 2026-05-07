@@ -1,7 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
 import { env } from "@/config/env";
+import { isTokenExpired } from "@/lib/jwt";
 import { AuthResponse } from "@/types/user";
 import { setAuthCookies } from "@/app/api/auth/_shared";
+
+async function refreshAccessToken(refreshToken: string): Promise<AuthResponse | null> {
+  try {
+    const refreshResponse = await fetch(`${env.apiBaseUrl}/auth/refresh`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ refreshToken }),
+    });
+
+    if (!refreshResponse.ok) {
+      return null;
+    }
+
+    return (await refreshResponse.json()) as AuthResponse;
+  } catch {
+    return null;
+  }
+}
 
 async function proxy(request: NextRequest, pathSegments: string[]) {
   const accessToken = request.cookies.get(env.accessTokenCookieKey)?.value;
@@ -27,11 +46,20 @@ async function proxy(request: NextRequest, pathSegments: string[]) {
     });
   };
 
-  let backendResponse: Response;
   let rotatedTokens: AuthResponse | null = null;
+  let effectiveAccessToken = accessToken;
+  if ((!effectiveAccessToken || isTokenExpired(effectiveAccessToken)) && refreshToken) {
+    const refreshedTokens = await refreshAccessToken(refreshToken);
+    if (refreshedTokens?.accessToken) {
+      effectiveAccessToken = refreshedTokens.accessToken;
+      rotatedTokens = refreshedTokens;
+    }
+  }
+
+  let backendResponse: Response;
 
   try {
-    backendResponse = await send(accessToken);
+    backendResponse = await send(effectiveAccessToken);
   } catch {
     return NextResponse.json(
       { message: "Backend service unavailable" },
@@ -40,22 +68,9 @@ async function proxy(request: NextRequest, pathSegments: string[]) {
   }
 
   if (backendResponse.status === 401 && refreshToken) {
-    try {
-      const refreshResponse = await fetch(`${env.apiBaseUrl}/auth/refresh`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ refreshToken }),
-      });
-
-      if (refreshResponse.ok) {
-        rotatedTokens = (await refreshResponse.json()) as AuthResponse;
-        backendResponse = await send(rotatedTokens.accessToken);
-      }
-    } catch {
-      return NextResponse.json(
-        { message: "Backend service unavailable" },
-        { status: 502 },
-      );
+    rotatedTokens = await refreshAccessToken(refreshToken);
+    if (rotatedTokens?.accessToken) {
+      backendResponse = await send(rotatedTokens.accessToken);
     }
   }
 

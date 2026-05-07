@@ -21,6 +21,28 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@NamedEntityGraph(
+    name = "Form.fullStructure",
+    attributeNodes = {
+        @NamedAttributeNode("createdBy"),
+        @NamedAttributeNode(value = "sections", subgraph = "sections-subgraph")
+    },
+    subgraphs = {
+        @NamedSubgraph(
+            name = "sections-subgraph",
+            attributeNodes = {
+                @NamedAttributeNode(value = "questions", subgraph = "questions-subgraph")
+            }
+        ),
+        @NamedSubgraph(
+            name = "questions-subgraph",
+            attributeNodes = {
+                @NamedAttributeNode("options"),
+                @NamedAttributeNode("clinicalScale")
+            }
+        )
+    }
+)
 public class Form {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

@@ -9,6 +9,19 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: "0.5"
+        reservations:
+          memory: 256M
 
   backend:
     build:
@@ -23,9 +36,18 @@ services:
       JWT_SECRET: ${JWT_SECRET:-your-super-secret-key-that-should-be-at-least-256-bits}
       CORS_ORIGINS: http://localhost:3000
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     volumes:
-      - ./uploads:/app/uploads
+      - ./uploads:/app/uploads:cached
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 768M
+          cpus: "1.0"
+        reservations:
+          memory: 512M
 
   frontend:
     build:
@@ -37,6 +59,14 @@ services:
       NEXT_PUBLIC_BFF_BASE_URL: /api/bff
     depends_on:
       - backend
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: "0.5"
+        reservations:
+          memory: 256M
 
 volumes:
   postgres_data:

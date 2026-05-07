@@ -8,17 +8,28 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import java.util.List;
+import java.util.UUID;
+
 public interface FormRepository extends JpaRepository<Form, UUID> {
-    List<Form> findByStatusAndPublicFormTrueOrderByUpdatedAtDesc(FormStatus status);
+    @Query("SELECT f FROM Form f JOIN FETCH f.createdBy WHERE f.status = :status AND f.publicForm = true ORDER BY f.updatedAt DESC")
+    List<Form> findByStatusAndPublicFormTrueOrderByUpdatedAtDesc(@Param("status") FormStatus status);
 
-    List<Form> findByStatusAndPublicFormTrueAndVisibilityOrderByUpdatedAtDesc(FormStatus status, FormVisibility visibility);
+    @Query("SELECT f FROM Form f JOIN FETCH f.createdBy WHERE f.status = :status AND f.publicForm = true AND f.visibility = :visibility ORDER BY f.updatedAt DESC")
+    List<Form> findByStatusAndPublicFormTrueAndVisibilityOrderByUpdatedAtDesc(@Param("status") FormStatus status, @Param("visibility") FormVisibility visibility);
 
+    @Query("SELECT f FROM Form f JOIN FETCH f.createdBy ORDER BY f.updatedAt DESC")
     List<Form> findAllByOrderByUpdatedAtDesc();
 
-    List<Form> findAllByCreatedBy_UserIdOrderByUpdatedAtDesc(UUID userId);
+    @Query("SELECT f FROM Form f JOIN FETCH f.createdBy WHERE f.createdBy.userId = :userId ORDER BY f.updatedAt DESC")
+    List<Form> findAllByCreatedBy_UserIdOrderByUpdatedAtDesc(@Param("userId") UUID userId);
 
-    List<Form> findByTemplateTrueAndCreatedBy_UserIdOrderByUpdatedAtDesc(UUID userId);
+    @Query("SELECT f FROM Form f JOIN FETCH f.createdBy WHERE f.template = true AND f.createdBy.userId = :userId ORDER BY f.updatedAt DESC")
+    List<Form> findByTemplateTrueAndCreatedBy_UserIdOrderByUpdatedAtDesc(@Param("userId") UUID userId);
 
-    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"createdBy"})
+    @org.springframework.data.jpa.repository.EntityGraph(value = "Form.fullStructure", type = org.springframework.data.jpa.repository.EntityGraph.EntityGraphType.LOAD)
     java.util.Optional<Form> findWithGraphByFormId(UUID formId);
 }

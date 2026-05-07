@@ -8,6 +8,8 @@ import com.healthcare.repository.UserRepository;
 import com.healthcare.security.FormPermissionService;
 import com.healthcare.service.engine.FormEngine;
 import com.healthcare.service.FormLogicService;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,6 +44,7 @@ public class FormService {
         this.formLogicService = formLogicService;
     }
 
+    @CacheEvict(value = {"forms_list", "form_details"}, allEntries = true)
     @Transactional
     public FormResponse create(FormUpsertRequest request) {
         User user = currentUser();
@@ -56,6 +59,10 @@ public class FormService {
         return formMapper.toResponse(formRepository.save(form));
     }
 
+    @org.springframework.cache.annotation.Caching(evict = {
+        @CacheEvict(value = "form_details", key = "#formId"),
+        @CacheEvict(value = "forms_list", allEntries = true)
+    })
     @Transactional
     public FormResponse update(UUID formId, FormUpsertRequest request) {
         Form form = formRepository.findWithGraphByFormId(formId)
@@ -77,6 +84,7 @@ public class FormService {
         formMapper.applyStructure(form, request);
     }
 
+    @CacheEvict(value = {"forms_list", "form_details"}, allEntries = true)
     @Transactional
     public void delete(UUID id) {
         Form f = formRepository.findById(id).orElseThrow();
@@ -84,6 +92,10 @@ public class FormService {
         formRepository.delete(f);
     }
 
+    @org.springframework.cache.annotation.Caching(evict = {
+        @CacheEvict(value = "form_details", key = "#id"),
+        @CacheEvict(value = "forms_list", allEntries = true)
+    })
     @Transactional
     public FormResponse publish(UUID id) {
         Form f = formRepository.findWithGraphByFormId(id).orElseThrow();
@@ -94,6 +106,10 @@ public class FormService {
         return formMapper.toResponse(formRepository.save(f));
     }
 
+    @org.springframework.cache.annotation.Caching(evict = {
+        @CacheEvict(value = "form_details", key = "#id"),
+        @CacheEvict(value = "forms_list", allEntries = true)
+    })
     @Transactional
     public FormResponse archive(UUID id) {
         Form f = formRepository.findWithGraphByFormId(id).orElseThrow();
@@ -102,6 +118,10 @@ public class FormService {
         return formMapper.toResponse(formRepository.save(f));
     }
 
+    @org.springframework.cache.annotation.Caching(evict = {
+        @CacheEvict(value = "form_details", key = "#id"),
+        @CacheEvict(value = "forms_list", allEntries = true)
+    })
     @Transactional
     public FormResponse unarchive(UUID id) {
         Form f = formRepository.findWithGraphByFormId(id).orElseThrow();
@@ -110,18 +130,21 @@ public class FormService {
         return formMapper.toResponse(formRepository.save(f));
     }
 
+    @Cacheable(value = "forms_list", key = "'public'")
     @Transactional
     public List<FormListItemResponse> listPublicForms() {
         return formRepository.findByStatusAndPublicFormTrueOrderByUpdatedAtDesc(FormStatus.PUBLISHED)
                 .stream().map(formMapper::toListItem).toList();
     }
 
+    @Cacheable(value = "forms_list", key = "'all_admin'")
     @Transactional
     public List<FormListItemResponse> listAllForms() {
         return formRepository.findAllByOrderByUpdatedAtDesc().stream()
                 .filter(formPermissionService::canView).map(formMapper::toListItem).toList();
     }
 
+    @Cacheable(value = "form_details", key = "#id")
     @Transactional
     public FormResponse get(UUID id) {
         Form f = formRepository.findWithGraphByFormId(id)
@@ -146,6 +169,7 @@ public class FormService {
         return formMapper.toResponse(f);
     }
 
+    @CacheEvict(value = {"forms_list", "form_details"}, allEntries = true)
     @Transactional
     public FormResponse cloneForm(UUID id) {
         Form src = formRepository.findWithGraphByFormId(id).orElseThrow();
@@ -224,6 +248,7 @@ public class FormService {
         return FormStateResponse.builder().formId(id).computedValues(s.getComputedValues()).build();
     }
 
+    @Cacheable(value = "form_details", key = "'public_' + #formId")
     @Transactional(readOnly = true)
     public FormResponse getPublic(UUID formId) {
         Form form = formRepository.findWithGraphByFormId(formId)
@@ -234,6 +259,7 @@ public class FormService {
         return formMapper.toResponse(form);
     }
 
+    // @Cacheable(value = "forms_list", key = "'user_' + @securityUtils.getCurrentUserId()")
     @Transactional(readOnly = true)
     public List<FormListItemResponse> listMyForms() {
         User currentUser = currentUser();
@@ -242,6 +268,7 @@ public class FormService {
                 .toList();
     }
 
+    // @Cacheable(value = "forms_list", key = "'templates_' + @securityUtils.getCurrentUserId()")
     @Transactional(readOnly = true)
     public List<FormListItemResponse> listTemplates() {
         User currentUser = currentUser();

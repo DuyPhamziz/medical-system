@@ -1,6 +1,7 @@
 package com.healthcare.controller;
 
 import com.healthcare.dto.PatientResponse;
+import com.healthcare.security.SecurityUtils;
 import com.healthcare.service.PatientService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,10 +15,14 @@ import java.util.UUID;
 public class PatientController {
     private final PatientService patientService;
     private final com.healthcare.service.AuditService auditService;
+    private final SecurityUtils securityUtils;
 
-    public PatientController(PatientService patientService, com.healthcare.service.AuditService auditService) {
+    public PatientController(PatientService patientService,
+                             com.healthcare.service.AuditService auditService,
+                             SecurityUtils securityUtils) {
         this.patientService = patientService;
         this.auditService = auditService;
+        this.securityUtils = securityUtils;
     }
 
     @GetMapping
@@ -25,6 +30,13 @@ public class PatientController {
     public ResponseEntity<List<PatientResponse>> list() {
         auditService.logAction("LIST_PATIENTS", "PATIENT", "ALL", "User listed all patients");
         return ResponseEntity.ok(patientService.listAll());
+    }
+
+    @GetMapping("/me")
+    @PreAuthorize("hasRole('PATIENT')")
+    public ResponseEntity<PatientResponse> getMyProfile() {
+        String email = securityUtils.getCurrentUserEmail();
+        return ResponseEntity.ok(patientService.getByEmail(email));
     }
 
     @GetMapping("/{id}")

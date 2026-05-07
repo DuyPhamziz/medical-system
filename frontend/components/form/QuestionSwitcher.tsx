@@ -1,12 +1,15 @@
 "use client";
 
+import React, { useMemo } from "react";
 import { Input } from "@/components/ui/input";
 import { FormQuestion } from "@/types/form";
 import { ShortAnswerQuestion } from "./questions/short-answer";
 import { SingleChoiceQuestion } from "./questions/single-choice";
 import { MultipleChoiceQuestion } from "./questions/multiple-choice";
 import { PedigreeQuestion } from "./PedigreeQuestion";
-import { MatrixQuestion, DynamicColumn } from "./MatrixQuestion";
+import { DEFAULT_MATRIX_SCORE_OPTIONS } from "./matrix/utils";
+import type { MatrixColumn, MatrixRow } from "./matrix/types";
+import { MatrixQuestion } from "./MatrixQuestion";
 import { ClinicalScaleQuestion } from "./ClinicalScaleQuestion";
 import { ScoredQuestion } from "./ScoredQuestion";
 import { RepeatableGroupQuestion } from "./RepeatableGroupQuestion";
@@ -19,10 +22,117 @@ type Props = {
   question: FormQuestion;
   answers: Record<number, Record<string, unknown>>;
   onChange: (qId: string, rIdx: number, key: string, val: unknown) => void;
+  computedValues?: Record<string, number | null>;
 };
 
-export function QuestionSwitcher({ question, answers, onChange }: Props) {
+/** Parse valueJson một lần, cache lại */
+function parseJson(raw: unknown): unknown {
+  if (typeof raw === "string") {
+    try { return JSON.parse(raw); } catch { return undefined; }
+  }
+  return raw;
+}
+
+/** Parse configJson + triggerLogic một lần, cache lại qua question reference */
+function useParsedConfig(question: FormQuestion) {
+  return useMemo(() => {
+    const cfg: Record<string, unknown> = {};
+    if (question.configJson) {
+      try { Object.assign(cfg, JSON.parse(question.configJson)); } catch { /* ignore */ }
+    }
+    return cfg;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [question.questionId, question.configJson]);
+}
+
+function parseTriggerLogic(raw: unknown): Record<string, unknown> {
+  if (typeof raw === "string") {
+    try {
+      const parsed = JSON.parse(raw);
+      return parsed && typeof parsed === "object" ? (parsed as Record<string, unknown>) : {};
+    } catch {
+      return {};
+    }
+  }
+
+  return raw && typeof raw === "object" ? (raw as Record<string, unknown>) : {};
+}
+
+// ─── MatrixSwitcher: tách riêng để useMemo hoạt động ổn định ────────
+const MatrixSwitcher = React.memo(function MatrixSwitcher({
+  question,
+  valueJson,
+  onChange,
+}: {
+  question: FormQuestion;
+  valueJson: unknown;
+  onChange: Props["onChange"];
+}) {
+  const config = useParsedConfig(question);
+
+  const matrixRows = useMemo<MatrixRow[]>(() => {
+    const configRows = Array.isArray(config.matrixRows) ? (config.matrixRows as MatrixRow[]) : [];
+    const optionRows = (question.options ?? [])
+      .filter((option) => parseTriggerLogic(option.triggerLogic).type === "row")
+      .map((option) => ({
+        rowId: option.optionId ?? crypto.randomUUID(),
+        label: option.content,
+        description: parseTriggerLogic(option.triggerLogic).description as string | undefined,
+      }));
+
+    return optionRows.length > 0 ? optionRows : configRows;
+  }, [config.matrixRows, question.options]);
+
+  const matrixColumns = useMemo<MatrixColumn[]>(() => {
+    const configColumns = Array.isArray(config.matrixColumns) ? (config.matrixColumns as MatrixColumn[]) : [];
+    const defaultMode = (config.matrixCellMode as "text" | "score" | undefined) ?? "score";
+    const defaultScoreOptions = Array.isArray(config.matrixScoreOptions)
+      ? config.matrixScoreOptions
+      : DEFAULT_MATRIX_SCORE_OPTIONS;
+
+    const optionColumns = (question.options ?? [])
+      .filter((option) => parseTriggerLogic(option.triggerLogic).type === "column")
+      .map((option) => {
+        const triggerLogic = parseTriggerLogic(option.triggerLogic);
+        return {
+          columnId: option.optionId ?? crypto.randomUUID(),
+          label: option.content,
+          description: triggerLogic.description as string | undefined,
+          mode: (triggerLogic.cellMode as "text" | "score" | undefined) ?? defaultMode,
+          placeholder: triggerLogic.placeholder as string | undefined,
+          scoreOptions: Array.isArray(triggerLogic.scoreOptions) ? (triggerLogic.scoreOptions as MatrixColumn["scoreOptions"]) : defaultScoreOptions,
+        };
+      });
+
+    return optionColumns.length > 0 ? optionColumns : configColumns;
+  }, [config.matrixCellMode, config.matrixColumns, config.matrixScoreOptions, question.options]);
+
+  const handleMatrixChange = useMemo(
+    () => (newValue: unknown) =>
+      onChange(question.questionId as string, 0, "valueJson", JSON.stringify(newValue)),
+    [onChange, question.questionId],
+  );
+
+  return (
+    <MatrixQuestion
+      content={question.content}
+      required={question.required}
+      config={{
+        rows: matrixRows,
+        columns: matrixColumns,
+        defaultCellMode: (config.matrixCellMode as "text" | "score" | undefined) ?? "score",
+        scoreOptions: Array.isArray(config.matrixScoreOptions) ? config.matrixScoreOptions : DEFAULT_MATRIX_SCORE_OPTIONS,
+      }}
+      value={valueJson}
+      onChange={handleMatrixChange}
+    />
+  );
+});
+
+// ─── QuestionSwitcher chính ────────────────────────────────────────────
+export const QuestionSwitcher = React.memo(function QuestionSwitcher({ question, answers, onChange, computedValues }: Props) {
   const val = answers[0] || {};
+  const config = useParsedConfig(question);
 
   switch (question.questionType) {
     case "text":
@@ -81,19 +191,12 @@ export function QuestionSwitcher({ question, answers, onChange }: Props) {
       );
 
     case "multiple_choice": {
-      const selectedOptionIds = (() => {
-        try {
-          const parsed = typeof val.valueJson === "string" ? JSON.parse(val.valueJson) : val.valueJson;
-          return Array.isArray(parsed) ? parsed : [];
-        } catch {
-          return [];
-        }
-      })();
+      const selectedOptionIds = parseJson(val.valueJson);
       return (
         <MultipleChoiceQuestion
           question={question}
           repeatIndex={0}
-          selectedOptionIds={selectedOptionIds}
+          selectedOptionIds={Array.isArray(selectedOptionIds) ? selectedOptionIds as string[] : []}
           onChange={(idx, v) => onChange(question.questionId as string, idx, "valueJson", JSON.stringify(v))}
           valueText={val.valueText as string}
           onValueTextChange={(idx, v) => onChange(question.questionId as string, idx, "valueText", v)}
@@ -101,42 +204,14 @@ export function QuestionSwitcher({ question, answers, onChange }: Props) {
       );
     }
 
-    case "matrix": {
-      let config: any = {};
-      if (question.configJson) {
-        try {
-          config = JSON.parse(question.configJson);
-        } catch (e) {
-          console.error("Invalid matrix config", e);
-        }
-      }
-      const matrixCellOptions = question.options
-        ?.filter((o) => {
-          try {
-            return JSON.parse(o.triggerLogic || "{}").type === "column";
-          } catch {
-            return false;
-          }
-        })
-        .map((opt) => ({ optionId: opt.optionId!, label: opt.content }));
-      const matrixValue: DynamicColumn[] = (() => {
-        try {
-          const parsed = typeof val.valueJson === "string" ? JSON.parse(val.valueJson) : val.valueJson;
-          return Array.isArray(parsed) ? (parsed as DynamicColumn[]) : [];
-        } catch {
-          return [];
-        }
-      })();
+    case "matrix":
       return (
-        <MatrixQuestion
-          content={question.content}
-          required={question.required}
-          config={{ rows: config.matrixRows || [], options: matrixCellOptions || [] }}
-          value={matrixValue}
-          onChange={(newValue) => onChange(question.questionId as string, 0, "valueJson", JSON.stringify(newValue))}
+        <MatrixSwitcher
+          question={question}
+          valueJson={val.valueJson}
+          onChange={onChange}
         />
       );
-    }
 
     case "pedigree":
       return (
@@ -144,7 +219,7 @@ export function QuestionSwitcher({ question, answers, onChange }: Props) {
           questionId={question.questionId as string}
           content={question.content}
           required={question.required}
-          value={typeof val.valueJson === "string" ? JSON.parse(val.valueJson) : undefined}
+          value={parseJson(val.valueJson) as any}
           onChange={onChange}
         />
       );
@@ -156,8 +231,8 @@ export function QuestionSwitcher({ question, answers, onChange }: Props) {
           content={question.content}
           required={question.required}
           scaleId={question.scaleId}
-          config={(question as any).configJson ? JSON.parse((question as any).configJson) : undefined}
-          value={typeof val.valueJson === "string" ? JSON.parse(val.valueJson) : undefined}
+          config={config}
+          value={parseJson(val.valueJson) as any}
           onChange={onChange}
         />
       );
@@ -175,19 +250,12 @@ export function QuestionSwitcher({ question, answers, onChange }: Props) {
       );
 
     case "repeatable_group": {
-      const groupValue = (() => {
-        try {
-          const parsed = typeof val.valueJson === "string" ? JSON.parse(val.valueJson) : val.valueJson;
-          return Array.isArray(parsed) ? parsed : [];
-        } catch {
-          return [];
-        }
-      })();
+      const groupValue = parseJson(val.valueJson);
       return (
         <RepeatableGroupQuestion
           question={question}
           repeatIndex={0}
-          value={groupValue}
+          value={Array.isArray(groupValue) ? groupValue as Record<string, unknown>[] : []}
           onChange={(idx, v) => onChange(question.questionId as string, idx, "valueJson", JSON.stringify(v))}
         />
       );
@@ -199,8 +267,8 @@ export function QuestionSwitcher({ question, answers, onChange }: Props) {
           questionId={question.questionId as string}
           content={question.content}
           required={question.required}
-          config={(question as any).configJson ? JSON.parse((question as any).configJson) : undefined}
-          value={typeof val.valueJson === "string" ? JSON.parse(val.valueJson) : undefined}
+          config={config}
+          value={parseJson(val.valueJson) as any}
           onChange={onChange}
         />
       );
@@ -211,8 +279,8 @@ export function QuestionSwitcher({ question, answers, onChange }: Props) {
           questionId={question.questionId as string}
           content={question.content}
           required={question.required}
-          config={(question as any).configJson ? JSON.parse((question as any).configJson) : undefined}
-          value={typeof val.valueJson === "string" ? JSON.parse(val.valueJson) : undefined}
+          config={config}
+          value={parseJson(val.valueJson) as any}
           onChange={onChange}
         />
       );
@@ -223,26 +291,20 @@ export function QuestionSwitcher({ question, answers, onChange }: Props) {
           questionId={question.questionId as string}
           content={question.content}
           required={question.required}
-          config={(question as any).configJson ? JSON.parse((question as any).configJson) : undefined}
+          config={config}
+          computedValue={computedValues?.[question.questionId!] ?? null}
         />
       );
 
     case "time_series": {
-      const tsValue = (() => {
-        try {
-          const parsed = typeof val.valueJson === "string" ? JSON.parse(val.valueJson) : val.valueJson;
-          return Array.isArray(parsed) ? parsed : [];
-        } catch {
-          return [];
-        }
-      })();
+      const tsValue = parseJson(val.valueJson);
       return (
         <TimeSeriesTrackingQuestion
           questionId={question.questionId as string}
           content={question.content}
           required={question.required}
-          config={(question as any).configJson ? JSON.parse((question as any).configJson) : undefined}
-          value={tsValue}
+          config={config}
+          value={Array.isArray(tsValue) ? tsValue : []}
           onChange={onChange}
         />
       );
@@ -280,7 +342,7 @@ export function QuestionSwitcher({ question, answers, onChange }: Props) {
           />
           <span className="text-xs font-bold text-slate-400">{question.scaleMax || 10}</span>
           {val.valueNumber !== undefined && (
-            <span className="ml-2 text-sm font-black text-emerald-600 min-w-[24px] text-center">
+            <span className="ml-2 min-w-6 text-center text-sm font-black text-emerald-600">
               {Number(val.valueNumber)}
             </span>
           )}
@@ -298,4 +360,4 @@ export function QuestionSwitcher({ question, answers, onChange }: Props) {
         />
       );
   }
-}
+});

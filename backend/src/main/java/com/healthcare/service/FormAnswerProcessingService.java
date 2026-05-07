@@ -1,5 +1,6 @@
 package com.healthcare.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.healthcare.dto.PedigreeAnswerDTO;
 import com.healthcare.entity.*;
@@ -207,16 +208,25 @@ public class FormAnswerProcessingService {
      * Validate matrix answer structure
      */
     private void processMatrixAnswer(FormAnswer answer) {
-        // Matrix answer should be in value_json format
-        // Validate structure but don't modify - let frontend handle formatting
+        // Matrix answer structure from frontend: 
+        // { "values": { "rowId": { "colId": "value/score", ... }, ... } }
+        if (answer.getValueJson() == null || answer.getValueJson().isBlank()) return;
+        try {
+            JsonNode node = objectMapper.readTree(answer.getValueJson());
+            if (!node.has("values")) {
+                log.warn("Matrix answer missing 'values' object for question {}", answer.getQuestion().getQuestionId());
+            }
+        } catch (Exception e) {
+            log.error("Invalid Matrix JSON for question {}: {}", answer.getQuestion().getQuestionId(), e.getMessage());
+        }
     }
 
     /**
      * Validate file upload answer structure
      */
     private void processFileUploadAnswer(FormAnswer answer) {
-        // File upload answer should contain URL in value_json
-        // Validate that file URL is accessible/stored
+        // File upload answer should contain URL or file info in value_json
+        // { "url": "...", "fileName": "...", "size": 123 }
     }
 
     /**
@@ -224,6 +234,7 @@ public class FormAnswerProcessingService {
      */
     private void processBodyMapAnswer(FormAnswer answer) {
         // Body map should contain coordinates and level in value_json
+        // { "markers": [{ "x": 0.5, "y": 0.2, "part": "back" }, ...] }
     }
 
     /**
@@ -249,14 +260,14 @@ public class FormAnswerProcessingService {
      * Validate time series data points
      */
     private void processTimeSeriesAnswer(FormAnswer answer) {
-        // Time series should contain array of data points
+        // Time series structure: [{ "timestamp": "...", "value": 1.2 }, ...]
     }
 
     /**
      * Validate lookup answer
      */
     private void processLookupAnswer(FormAnswer answer) {
-        // Lookup answer should contain selected value IDs
+        // Lookup answer: { "selectedIds": ["uuid1", ...], "displayValue": "..." }
     }
 
     /**
@@ -310,15 +321,15 @@ public class FormAnswerProcessingService {
      */
     private void processRepeatableGroupAnswer(FormAnswer answer) {
         // valueJson should contain an array of group instances
-        // Structure: [{ "instanceIndex": 0, "values": {...} }, ...]
+        // Structure from frontend: [{ "questionId": "val", ... }, ...]
         if (answer.getValueJson() == null || answer.getValueJson().isBlank()) return;
         try {
-            var arr = objectMapper.readTree(answer.getValueJson());
+            JsonNode arr = objectMapper.readTree(answer.getValueJson());
             if (!arr.isArray()) {
-                log.warn("REPEATABLE_GROUP answer must be a JSON array");
+                log.warn("REPEATABLE_GROUP answer must be a JSON array for question {}", answer.getQuestion().getQuestionId());
             }
         } catch (Exception e) {
-            log.warn("Invalid REPEATABLE_GROUP answer JSON: {}", e.getMessage());
+            log.warn("Invalid REPEATABLE_GROUP answer JSON for question {}: {}", answer.getQuestion().getQuestionId(), e.getMessage());
         }
     }
 
@@ -327,16 +338,16 @@ public class FormAnswerProcessingService {
      */
     private void processIdentityAnswer(FormAnswer answer) {
         // valueJson should contain structured identity data
-        // Validate required demographic fields exist
+        // Matches frontend IdentityQuestion structure
         if (answer.getValueJson() == null || answer.getValueJson().isBlank()) return;
         try {
-            var node = objectMapper.readTree(answer.getValueJson());
-            // Validate that fullName is present if required
-            if (!node.has("fullName") || node.get("fullName").asText().isBlank()) {
-                log.warn("IDENTITY answer missing fullName");
+            JsonNode node = objectMapper.readTree(answer.getValueJson());
+            // Log if key fields are missing to help debugging, but don't block save
+            if (!node.has("fullName")) {
+                log.debug("IDENTITY answer for question {} missing 'fullName'", answer.getQuestion().getQuestionId());
             }
         } catch (Exception e) {
-            log.warn("Invalid IDENTITY answer JSON: {}", e.getMessage());
+            log.warn("Invalid IDENTITY answer JSON for question {}: {}", answer.getQuestion().getQuestionId(), e.getMessage());
         }
     }
 }

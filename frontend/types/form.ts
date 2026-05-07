@@ -20,7 +20,8 @@ export type FormQuestionType =
 	| "clinical_scale"
 	| "scored"
 	| "repeatable_group"
-	| "identity";
+	| "identity"
+	| "dynamic_table";
 
 export type FormOption = {
 	optionId: string;
@@ -49,8 +50,12 @@ export type FormQuestion = {
 	scaleMax?: number | null;
 	triggerLogic?: string | null;
 	configJson?: string | null;
+	aiConfigJson?: string | null;
 	allowOther?: boolean;
 	scaleId?: string | null;
+	parentQuestionId?: string | null;
+	parentOptionId?: string | null;
+	subQuestions?: FormQuestion[];
 	options: FormOption[];
 };
 
@@ -109,6 +114,8 @@ export type FormAnswerValue = {
 	valueBoolean?: boolean | null;
 	valueJson?: string | null;
 };
+
+export type AnswersState = Record<string, Record<number, Record<string, string | number | boolean | null>>>;
 
 export type FormSession = {
 	sessionId: string;

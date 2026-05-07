@@ -24,7 +24,7 @@ public class PatientService {
 
     @Transactional(readOnly = true)
     public List<PatientResponse> listAll() {
-        return patientRepository.findAll().stream()
+        return patientRepository.findAllWithUser().stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
     }
@@ -33,6 +33,13 @@ public class PatientService {
     public PatientResponse getById(UUID patientId) {
         Patient patient = patientRepository.findById(patientId)
                 .orElseThrow(() -> new IllegalArgumentException("Patient not found"));
+        return toResponse(patient);
+    }
+
+    @Transactional(readOnly = true)
+    public PatientResponse getByEmail(String email) {
+        Patient patient = patientRepository.findByUser_Email(email)
+                .orElseThrow(() -> new IllegalArgumentException("Patient not found for email: " + email));
         return toResponse(patient);
     }
 

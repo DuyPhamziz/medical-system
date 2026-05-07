@@ -9,9 +9,11 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface AnswerSessionRepository extends JpaRepository<AnswerSession, UUID> {
+    // Full graph: used when loading a single session for display/edit (form structure needed)
     @EntityGraph(attributePaths = {"form", "form.sections", "form.sections.questions", "form.sections.questions.options", "patient", "answers", "answers.question", "answers.option"})
     Optional<AnswerSession> findWithGraphBySessionId(UUID sessionId);
 
-    @EntityGraph(attributePaths = {"form", "form.sections", "form.sections.questions", "form.sections.questions.options", "patient", "answers", "answers.question", "answers.option"})
+    // Lighter graph for history listing: only session metadata + answers, no full form structure
+    @EntityGraph(attributePaths = {"patient", "answers", "answers.question", "answers.option"})
     List<AnswerSession> findByPatient_PatientIdOrderByLastSavedAtDesc(UUID patientId);
 }

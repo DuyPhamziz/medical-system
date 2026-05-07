@@ -3,8 +3,8 @@
 import { useFormBuilderStore } from "@/store/form-builder.store";
 
 export function BuilderSidebar() {
-  const { addQuestion, form } = useFormBuilderStore();
-  const firstSectionId = form.sections[0]?.sectionId;
+  const addQuestion = useFormBuilderStore(s => s.addQuestion);
+  const firstSectionId = useFormBuilderStore(s => s.form.sections[0]?.sectionId);
 
   return (
     <div className="w-60 border-l p-4">

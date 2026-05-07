@@ -50,7 +50,8 @@ export const FormFiller: React.FC<FormFillerProps> = ({
     return form.sections.flatMap((section) => section.questions);
   }, [form.sections]);
 
-  // Calculate progress: answered required visible questions
+  // Calculate progress using watch instead of getValues for reactivity
+  const watchedAnswers = methods.watch('answers');
   const progress = useMemo(() => {
     const visibleQuestions = allQuestions.filter(
       (q) => q.questionId && visibilityMap[q.questionId] !== false
@@ -58,13 +59,13 @@ export const FormFiller: React.FC<FormFillerProps> = ({
 
     const answeredRequired = visibleQuestions.filter((q) => {
       if (!q.required) return true;
-      const answer = methods.getValues(`answers.${q.questionId}`);
+      const answer = q.questionId ? watchedAnswers?.[q.questionId] : undefined;
       return answer && (Array.isArray(answer) ? answer.length > 0 : Boolean(answer));
     });
 
     if (visibleQuestions.length === 0) return 0;
     return Math.round((answeredRequired.length / visibleQuestions.length) * 100);
-  }, [allQuestions, visibilityMap, methods.getValues]);
+  }, [allQuestions, visibilityMap, watchedAnswers]);
 
   // Handle visibility change for conditional questions
   const handleVisibilityChange = useCallback(

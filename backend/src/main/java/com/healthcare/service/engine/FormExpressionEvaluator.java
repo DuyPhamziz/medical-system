@@ -41,15 +41,15 @@ public class FormExpressionEvaluator {
         }
 
         try {
-            String processedFormula = formula;
+            String processedFormula = formula.replace("CURRENT_YEAR", String.valueOf(java.time.Year.now().getValue()));
 
             // Check if it's a function call
-            if (formula.matches("^(sum|avg|min|max|if|count)\\(.*\\)")) {
-                return evaluateFunction(formula, currentAnswers);
+            if (processedFormula.matches("^(sum|avg|min|max|if|count|AGE)\\(.*\\)")) {
+                return evaluateFunction(processedFormula, currentAnswers);
             }
 
             // Replace {{uuid}} with variable names for expr4j
-            processedFormula = replaceQuestionReferences(formula);
+            processedFormula = replaceQuestionReferences(processedFormula);
 
             // Build and evaluate expression using expr4j
             Expression expression = new ExpressionBuilder(processedFormula)
@@ -114,8 +114,28 @@ public class FormExpressionEvaluator {
             case "max" -> evaluateMax(argsStr, currentAnswers);
             case "if" -> evaluateIf(argsStr, currentAnswers);
             case "count" -> evaluateCount(argsStr, currentAnswers);
+            case "AGE" -> evaluateAge(argsStr, currentAnswers);
             default -> null;
         };
+    }
+
+    private Object evaluateAge(String argsStr, Map<UUID, Object> currentAnswers) {
+        Object birthDateObj = resolveArgument(argsStr, currentAnswers);
+        if (birthDateObj == null) return null;
+
+        try {
+            java.time.LocalDate birthDate;
+            if (birthDateObj instanceof java.time.LocalDate ld) {
+                birthDate = ld;
+            } else {
+                birthDate = java.time.LocalDate.parse(birthDateObj.toString().substring(0, 10));
+            }
+            java.time.LocalDate today = java.time.LocalDate.now();
+            return java.time.Period.between(birthDate, today).getYears();
+        } catch (Exception e) {
+            log.warn("Failed to parse birthDate for AGE function: {}", birthDateObj);
+            return null;
+        }
     }
 
     private BigDecimal evaluateSum(String argsStr, Map<UUID, Object> currentAnswers) {

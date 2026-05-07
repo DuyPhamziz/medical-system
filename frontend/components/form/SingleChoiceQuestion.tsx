@@ -14,6 +14,9 @@ import {
 } from '@mui/material';
 import { Controller, useFormContext } from 'react-hook-form';
 
+import { FormQuestion } from '@/types/form';
+import { DynamicQuestion } from './DynamicQuestion';
+
 interface Option {
   optionId: string;
   content: string;
@@ -25,6 +28,7 @@ interface SingleChoiceQuestionProps {
   options: Option[];
   required?: boolean;
   allowOther?: boolean;
+  subQuestions?: FormQuestion[];
   config?: {
     displayMode?: 'RADIO' | 'DROPDOWN';
     helperText?: string;
@@ -33,10 +37,23 @@ interface SingleChoiceQuestionProps {
 }
 
 const SingleChoiceQuestion: React.FC<SingleChoiceQuestionProps> = ({ 
-  questionId, content, options = [], required, allowOther, config = {} 
+  questionId, content, options = [], required, allowOther, subQuestions = [], config = {} 
 }) => {
   const { control, watch } = useFormContext();
   const selectedValue = watch(`answers.${questionId}`);
+
+  const renderSubQuestions = (parentOptionId?: string) => {
+    const filtered = subQuestions.filter(sq => sq.parentOptionId === parentOptionId);
+    if (filtered.length === 0) return null;
+
+    return (
+      <Box sx={{ ml: 4, mt: 2, pl: 2, borderLeft: '2px solid #f1f5f9' }}>
+        {filtered.map(sq => (
+          <DynamicQuestion key={sq.questionId} question={sq} />
+        ))}
+      </Box>
+    );
+  };
 
   return (
     <Box sx={{ mb: 3 }}>
@@ -69,12 +86,14 @@ const SingleChoiceQuestion: React.FC<SingleChoiceQuestionProps> = ({
             ) : (
               <RadioGroup {...field} value={field.value || ''}>
                 {options.map((opt) => (
-                  <FormControlLabel
-                    key={opt.optionId}
-                    value={opt.optionId}
-                    control={<Radio />}
-                    label={opt.content}
-                  />
+                  <Box key={opt.optionId}>
+                    <FormControlLabel
+                      value={opt.optionId}
+                      control={<Radio />}
+                      label={opt.content}
+                    />
+                    {selectedValue === opt.optionId && renderSubQuestions(opt.optionId)}
+                  </Box>
                 ))}
                 {allowOther && (
                   <FormControlLabel
@@ -89,6 +108,8 @@ const SingleChoiceQuestion: React.FC<SingleChoiceQuestionProps> = ({
           </FormControl>
         )}
       />
+      {config.displayMode === 'DROPDOWN' && selectedValue && renderSubQuestions(selectedValue)}
+
       {allowOther && selectedValue === 'other' && (
         <Controller
           name={`answers.${questionId}_other`}

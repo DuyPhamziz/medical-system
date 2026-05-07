@@ -1,6 +1,7 @@
 package com.healthcare.config;
 
 import com.healthcare.entity.User;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;
@@ -13,6 +14,7 @@ import java.util.UUID;
 
 @Configuration
 @EnableJpaAuditing(auditorAwareRef = "auditorProvider")
+@EnableCaching
 public class AuditConfig {
 
     @Bean

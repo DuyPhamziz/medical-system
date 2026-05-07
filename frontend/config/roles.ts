@@ -4,28 +4,33 @@ export const ROLE_DASHBOARD: Record<Role, string> = {
 	ADMIN: "/dashboard/admin",
 	DOCTOR: "/dashboard/doctor",
 	PATIENT: "/dashboard/patient",
-	STAFF: "/dashboard/doctor",
+	STAFF: "/dashboard/queue",
 };
 
 export const ROLE_MENU: Record<Role, Array<{ label: string; href: string }>> = {
 	ADMIN: [
-		{ label: "Tổng quan biểu mẫu", href: "/dashboard/admin?tab=forms" },
-		{ label: "Quản lý người dùng", href: "/dashboard/admin" },
-		{ label: "Cấu hình hệ thống", href: "/dashboard/admin?tab=config" },
+		{ label: "Tổng quan", href: "/dashboard/admin?tab=overview" },
+		{ label: "Tổ chức", href: "/dashboard/admin?tab=orgs" },
+		{ label: "Người dùng", href: "/dashboard/admin?tab=users" },
+		{ label: "Biểu mẫu", href: "/dashboard/admin?tab=forms" },
+		{ label: "Phòng khám", href: "/dashboard/clinics" },
+		{ label: "Cấu hình", href: "/dashboard/admin?tab=config" },
 	],
 	DOCTOR: [
-		{ label: "Biểu mẫu", href: "/dashboard/forms" },
+		{ label: "Lịch hẹn", href: "/dashboard/appointments" },
 		{ label: "Bệnh nhân", href: "/dashboard/doctor?tab=patients" },
 		{ label: "Lượt khám", href: "/dashboard/doctor?tab=visits" },
 		{ label: "Chẩn đoán", href: "/dashboard/doctor?tab=diagnosis" },
+		{ label: "CDSS", href: "/dashboard/cdss" },
+		{ label: "Biểu mẫu", href: "/dashboard/forms" },
 	],
 	PATIENT: [
-		{ label: "Lịch hẹn", href: "/dashboard/patient?tab=appointments" },
-		{ label: "Hồ sơ y tế", href: "/dashboard/patient?tab=records" },
+		{ label: "Trang chủ", href: "/dashboard/patient" },
 	],
 	STAFF: [
-		{ label: "Hàng chờ", href: "/dashboard/doctor?tab=queue" },
-		{ label: "Biểu mẫu intake", href: "/dashboard/doctor?tab=intake" },
+		{ label: "Hàng chờ", href: "/dashboard/queue" },
+		{ label: "Bệnh nhân", href: "/dashboard/doctor?tab=patients" },
+		{ label: "Phòng khám", href: "/dashboard/clinics" },
 	],
 };
 
@@ -34,4 +39,8 @@ export const DASHBOARD_ROLE_GUARD: Record<string, Role[]> = {
 	"/dashboard/forms": ["DOCTOR"],
 	"/dashboard/doctor": ["DOCTOR", "STAFF"],
 	"/dashboard/patient": ["PATIENT"],
+	"/dashboard/appointments": ["DOCTOR", "STAFF"],
+	"/dashboard/clinics": ["ADMIN", "STAFF"],
+	"/dashboard/cdss": ["DOCTOR"],
+	"/dashboard/queue": ["STAFF", "DOCTOR"],
 };

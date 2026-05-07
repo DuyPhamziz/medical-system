@@ -36,6 +36,11 @@ public class SecurityUtils {
         return user != null ? user.getUserId() : null;
     }
 
+    public String getCurrentUserEmail() {
+        User user = getCurrentUser();
+        return user != null ? user.getEmail() : null;
+    }
+
     public Role getCurrentRole() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null) return null;

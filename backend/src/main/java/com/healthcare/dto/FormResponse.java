@@ -80,7 +80,14 @@ public class FormResponse {
         private Integer scaleMax;
         private String triggerLogic;
         private String configJson;
+        private String aiConfigJson;
+        private String dataClassification;
+        private boolean isPii;
         private UUID scaleId;
+        private UUID parentQuestionId;
+        private UUID parentOptionId;
+        @Builder.Default
+        private List<QuestionResponse> subQuestions = new ArrayList<>();
         @Builder.Default
         private List<OptionResponse> options = new ArrayList<>();
     }

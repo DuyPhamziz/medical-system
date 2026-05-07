@@ -42,6 +42,22 @@ function resolveAllowedRoles(pathname: string): Role[] | null {
 		return ["DOCTOR"];
 	}
 
+	if (pathname.startsWith("/dashboard/clinics")) {
+		return DASHBOARD_ROLE_GUARD["/dashboard/clinics"];
+	}
+
+	if (pathname.startsWith("/dashboard/cdss")) {
+		return DASHBOARD_ROLE_GUARD["/dashboard/cdss"];
+	}
+
+	if (pathname.startsWith("/dashboard/queue")) {
+		return DASHBOARD_ROLE_GUARD["/dashboard/queue"];
+	}
+
+	if (pathname.startsWith("/dashboard/appointments")) {
+		return ["DOCTOR", "STAFF"];
+	}
+
 	if (pathname.startsWith("/dashboard/admin")) {
 		return DASHBOARD_ROLE_GUARD["/dashboard/admin"];
 	}

@@ -1,26 +1,30 @@
 import React from 'react';
+import dynamic from 'next/dynamic';
 import { Box, Typography } from '@mui/material';
 import { FormQuestion } from '@/types/form';
 import { ConditionalQuestionWrapper } from './ConditionalQuestionWrapper';
 
-// Import all question components
-import { MatrixQuestion } from './MatrixQuestion';
-import { FileUploadQuestion } from './FileUploadQuestion';
-import { BodyMapQuestion } from './BodyMapQuestion';
-import { PedigreeQuestion } from './PedigreeQuestion';
-import TextQuestion from './TextQuestion';
-import NumberQuestion from './NumberQuestion';
-import DateQuestion from './DateQuestion';
-import SingleChoiceQuestion from './SingleChoiceQuestion';
-import MultipleChoiceQuestion from './MultipleChoiceQuestion';
-import ScaleQuestion from './ScaleQuestion';
-import { ClinicalScaleQuestion } from './ClinicalScaleQuestion';
-import { ScoredQuestion } from './ScoredQuestion';
-import { RepeatableGroupQuestion } from './RepeatableGroupQuestion';
-import { IdentityQuestion } from './IdentityQuestion';
-import { LookupQuestion } from './LookupQuestion';
-import { CalculatedDisplayQuestion } from './CalculatedDisplayQuestion';
-import { TimeSeriesTrackingQuestion } from './TimeSeriesTrackingQuestion';
+// Dynamically import question components to reduce initial bundle size
+// SSR enabled so components render on first paint (no client-side flash)
+const TextQuestion = dynamic(() => import('./TextQuestion'));
+const NumberQuestion = dynamic(() => import('./NumberQuestion'));
+const DateQuestion = dynamic(() => import('./DateQuestion'));
+const SingleChoiceQuestion = dynamic(() => import('./SingleChoiceQuestion'));
+const MultipleChoiceQuestion = dynamic(() => import('./MultipleChoiceQuestion'));
+const ScaleQuestion = dynamic(() => import('./ScaleQuestion'));
+
+const MatrixQuestion = dynamic(() => import('./MatrixQuestion').then(m => ({ default: m.MatrixQuestion })));
+const FileUploadQuestion = dynamic(() => import('./FileUploadQuestion').then(m => ({ default: m.FileUploadQuestion })));
+const BodyMapQuestion = dynamic(() => import('./BodyMapQuestion').then(m => ({ default: m.BodyMapQuestion })));
+const PedigreeQuestion = dynamic(() => import('./PedigreeQuestion').then(m => ({ default: m.PedigreeQuestion })));
+const ClinicalScaleQuestion = dynamic(() => import('./ClinicalScaleQuestion').then(m => ({ default: m.ClinicalScaleQuestion })));
+const ScoredQuestion = dynamic(() => import('./ScoredQuestion').then(m => ({ default: m.ScoredQuestion })));
+const RepeatableGroupQuestion = dynamic(() => import('./RepeatableGroupQuestion').then(m => ({ default: m.RepeatableGroupQuestion })));
+const IdentityQuestion = dynamic(() => import('./IdentityQuestion').then(m => ({ default: m.IdentityQuestion })));
+const LookupQuestion = dynamic(() => import('./LookupQuestion').then(m => ({ default: m.LookupQuestion })));
+const CalculatedDisplayQuestion = dynamic(() => import('./CalculatedDisplayQuestion').then(m => ({ default: m.CalculatedDisplayQuestion })));
+const TimeSeriesTrackingQuestion = dynamic(() => import('./TimeSeriesTrackingQuestion').then(m => ({ default: m.TimeSeriesTrackingQuestion })));
+const DynamicTableQuestion = dynamic(() => import('./DynamicTableQuestion').then(m => ({ default: m.DynamicTableQuestion })));
 
 interface DynamicQuestionProps {
   question: FormQuestion;
@@ -32,7 +36,7 @@ interface DynamicQuestionProps {
  * Routes to correct component based on question type
  * Handles conditional logic wrapping
  */
-export const DynamicQuestion: React.FC<DynamicQuestionProps> = ({
+export const DynamicQuestion: React.FC<DynamicQuestionProps> = React.memo(({
   question,
   onVisibilityChange,
 }) => {
@@ -47,70 +51,100 @@ export const DynamicQuestion: React.FC<DynamicQuestionProps> = ({
   }, [question]);
 
   const renderQuestion = () => {
+    const subQuestions = question.subQuestions || [];
+
+    const renderSubQuestions = (parentOptionId?: string) => {
+      const filtered = parentOptionId 
+        ? subQuestions.filter(sq => sq.parentOptionId === parentOptionId)
+        : subQuestions.filter(sq => !sq.parentOptionId);
+        
+      if (filtered.length === 0) return null;
+      
+      return (
+        <Box sx={{ ml: 4, mt: 2, pl: 2, borderLeft: '2px solid #f1f5f9' }}>
+          {filtered.map(sq => (
+            <DynamicQuestion key={sq.questionId} question={sq} />
+          ))}
+        </Box>
+      );
+    };
+
     switch (question.questionType.toLowerCase()) {
       case 'text':
         return (
-          <TextQuestion
-            questionId={question.questionId!}
-            content={question.content}
-            required={question.required}
-            config={{
-              placeholder: question.placeholder || undefined,
-              minLength: question.minLength || undefined,
-              maxLength: question.maxLength || undefined,
-              validationPattern: question.validationPattern || undefined,
-              validationMessage: question.validationMessage || undefined,
-              helperText: question.helperText || undefined,
-              textMode: config.textMode, // SHORT or PARAGRAPH
-            }}
-          />
+          <>
+            <TextQuestion
+              questionId={question.questionId!}
+              content={question.content}
+              required={question.required}
+              config={{
+                placeholder: question.placeholder || undefined,
+                minLength: question.minLength || undefined,
+                maxLength: question.maxLength || undefined,
+                validationPattern: question.validationPattern || undefined,
+                validationMessage: question.validationMessage || undefined,
+                helperText: question.helperText || undefined,
+                textMode: config.textMode, // SHORT or PARAGRAPH
+              }}
+            />
+            {renderSubQuestions()}
+          </>
         );
 
       case 'number':
         return (
-          <NumberQuestion
-            questionId={question.questionId!}
-            content={question.content}
-            required={question.required}
-            config={{
-              placeholder: question.placeholder || undefined,
-              minValue: question.minValue || undefined,
-              maxValue: question.maxValue || undefined,
-              validationMessage: question.validationMessage || undefined,
-              helperText: question.helperText || undefined,
-            }}
-          />
+          <>
+            <NumberQuestion
+              questionId={question.questionId!}
+              content={question.content}
+              required={question.required}
+              config={{
+                placeholder: question.placeholder || undefined,
+                minValue: question.minValue || undefined,
+                maxValue: question.maxValue || undefined,
+                validationMessage: question.validationMessage || undefined,
+                helperText: question.helperText || undefined,
+              }}
+            />
+            {renderSubQuestions()}
+          </>
         );
 
       case 'date':
         return (
-          <DateQuestion
-            questionId={question.questionId!}
-            content={question.content}
-            required={question.required}
-            config={{
-              helperText: question.helperText || undefined,
-              minDate: config.minDate,
-              maxDate: config.maxDate,
-              validationMessage: question.validationMessage || undefined,
-            }}
-          />
+          <>
+            <DateQuestion
+              questionId={question.questionId!}
+              content={question.content}
+              required={question.required}
+              config={{
+                helperText: question.helperText || undefined,
+                minDate: config.minDate,
+                maxDate: config.maxDate,
+                validationMessage: question.validationMessage || undefined,
+              }}
+            />
+            {renderSubQuestions()}
+          </>
         );
 
       case 'datetime':
         return (
-          <DateQuestion
-            questionId={question.questionId!}
-            content={question.content}
-            required={question.required}
-            config={{
-              includeTime: true,
-              helperText: question.helperText || undefined,
-              minDate: config.minDate,
-              maxDate: config.maxDate,
-              validationMessage: question.validationMessage || undefined,
-            }}
-          />
+          <>
+            <DateQuestion
+              questionId={question.questionId!}
+              content={question.content}
+              required={question.required}
+              config={{
+                includeTime: true,
+                helperText: question.helperText || undefined,
+                minDate: config.minDate,
+                maxDate: config.maxDate,
+                validationMessage: question.validationMessage || undefined,
+              }}
+            />
+            {renderSubQuestions()}
+          </>
         );
 
       case 'single_choice':
@@ -121,6 +155,7 @@ export const DynamicQuestion: React.FC<DynamicQuestionProps> = ({
             required={question.required}
             options={question.options}
             allowOther={question.allowOther}
+            subQuestions={question.subQuestions}
             config={{
               displayMode: config.displayMode, // RADIO, DROPDOWN
               helperText: question.helperText || undefined,
@@ -136,6 +171,7 @@ export const DynamicQuestion: React.FC<DynamicQuestionProps> = ({
             content={question.content}
             required={question.required}
             options={question.options}
+            subQuestions={question.subQuestions}
             config={{
               helperText: question.helperText || undefined,
               minSelection: question.minLength || undefined,
@@ -147,41 +183,38 @@ export const DynamicQuestion: React.FC<DynamicQuestionProps> = ({
 
       case 'scale':
         return (
-          <ScaleQuestion
-            questionId={question.questionId!}
-            content={question.content}
-            required={question.required}
-            config={{
-              minValue: question.scaleMin || 0,
-              maxValue: question.scaleMax || 10,
-              helperText: question.helperText || undefined,
-            }}
-          />
+          <>
+            <ScaleQuestion
+              questionId={question.questionId!}
+              content={question.content}
+              required={question.required}
+              config={{
+                minValue: question.scaleMin || 0,
+                maxValue: question.scaleMax || 10,
+                helperText: question.helperText || undefined,
+              }}
+            />
+            {renderSubQuestions()}
+          </>
         );
 
       case 'matrix':
-        const matrixRows = config.matrixRows;
-        const matrixCellOptions = question.options
-          ?.filter(o => {
-            try {
-              return JSON.parse(o.triggerLogic || '{}').type === 'column';
-            } catch {
-              return false;
-            }
-          })
-          .map(opt => ({
-            optionId: opt.optionId!,
-            label: opt.content
-          }));
-
         return (
           <MatrixQuestion
             content={question.content}
             required={question.required}
-            config={{
-              rows: matrixRows,
-              options: matrixCellOptions,
-            }}
+            options={question.options}
+            config={config}
+          />
+        );
+
+      case 'dynamic_table':
+        return (
+          <DynamicTableQuestion
+            questionId={question.questionId!}
+            content={question.content}
+            required={question.required}
+            config={config}
           />
         );
 
@@ -346,4 +379,4 @@ export const DynamicQuestion: React.FC<DynamicQuestionProps> = ({
       {renderQuestion()}
     </ConditionalQuestionWrapper>
   );
-};
+});

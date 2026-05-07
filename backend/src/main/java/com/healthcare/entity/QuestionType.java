@@ -18,5 +18,6 @@ public enum QuestionType {
     CLINICAL_SCALE,
     SCORED,
     REPEATABLE_GROUP,
-    IDENTITY
+    IDENTITY,
+    DYNAMIC_TABLE
 }

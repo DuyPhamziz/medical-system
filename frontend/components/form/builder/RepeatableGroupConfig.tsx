@@ -35,8 +35,11 @@ export function RepeatableGroupConfig({ question, onChange }: Props) {
       minInstances,
       childFields,
     });
-    onChange({ configJson } as any);
-  }, [maxInstances, minInstances, childFields]);
+    
+    if (question.configJson !== configJson) {
+      onChange({ configJson } as any);
+    }
+  }, [maxInstances, minInstances, childFields, question.configJson, onChange]);
 
   const addField = () => {
     setChildFields((prev) => [

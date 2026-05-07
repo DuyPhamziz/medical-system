@@ -11,6 +11,7 @@ Thumbs.db
 .idea/
 # Claude config
 .claude/
+.qwen/
 # =====================
 # ENV / secrets
 # =====================

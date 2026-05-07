@@ -71,7 +71,7 @@ public class JwtService {
     private String buildToken(User user, long expirationMs, Map<String, Object> extraClaims) {
         Instant now = Instant.now();
 
-        return Jwts.builder()
+        var builder = Jwts.builder()
                 .claims(extraClaims)
                 .subject(user.getUserId().toString())
                 .claim("email", user.getEmail())
@@ -79,8 +79,18 @@ public class JwtService {
                 .claim("permissions", RolePermissionMatrix.permissionsOf(user.getRole()).stream().map(Enum::name).toList())
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(now.plusMillis(expirationMs)))
-                .signWith(secretKey)
-                .compact();
+                .signWith(secretKey);
+
+        // Add orgId if user belongs to an organization (null for platform admins)
+        if (user.getOrgId() != null) {
+            builder.claim("orgId", user.getOrgId().toString());
+        }
+
+        return builder.compact();
+    }
+
+    public String extractOrgId(String token) {
+        return extractAllClaims(token).get("orgId", String.class);
     }
 
     private Claims extractAllClaims(String token) {

@@ -3,12 +3,15 @@ FROM node:20-alpine AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 COPY package.json package-lock.json ./
-RUN npm ci
+RUN --mount=type=cache,target=/root/.npm npm ci
 
 # Rebuild the source code only when needed
 FROM node:20-alpine AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
+COPY tsconfig.json next.config.ts postcss.config.mjs eslint.config.mjs ./
+COPY public ./public
+COPY app/globals.css ./app/globals.css
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED 1
 RUN npm run build

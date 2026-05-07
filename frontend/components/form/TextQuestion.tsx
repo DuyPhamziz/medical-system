@@ -1,5 +1,7 @@
 import React from 'react';
-import { TextField, Typography, Box } from '@mui/material';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
 import { Controller, useFormContext } from 'react-hook-form';
 
 interface TextQuestionProps {

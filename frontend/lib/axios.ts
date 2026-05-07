@@ -7,9 +7,6 @@ type RetryRequestConfig = InternalAxiosRequestConfig & { _retry?: boolean };
 const apiClient = axios.create({
 	baseURL: env.bffBaseUrl,
 	withCredentials: true,
-	headers: {
-		"Content-Type": "application/json",
-	},
 });
 
 let isRefreshing = false;

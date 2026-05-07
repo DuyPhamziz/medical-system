@@ -11,6 +11,9 @@ import {
 } from '@mui/material';
 import { Controller, useFormContext } from 'react-hook-form';
 
+import { FormQuestion } from '@/types/form';
+import { DynamicQuestion } from './DynamicQuestion';
+
 interface Option {
   optionId: string;
   content: string;
@@ -22,6 +25,7 @@ interface MultipleChoiceQuestionProps {
   options: Option[];
   required?: boolean;
   allowOther?: boolean;
+  subQuestions?: FormQuestion[];
   config?: {
     helperText?: string;
     minSelection?: number;
@@ -31,11 +35,24 @@ interface MultipleChoiceQuestionProps {
 }
 
 const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({ 
-  questionId, content, options = [], required, allowOther, config = {} 
+  questionId, content, options = [], required, allowOther, subQuestions = [], config = {} 
 }) => {
   const { control, watch } = useFormContext();
   const selectedValues = watch(`answers.${questionId}`) || [];
   const isOtherSelected = selectedValues.includes('other');
+
+  const renderSubQuestions = (parentOptionId?: string) => {
+    const filtered = subQuestions.filter(sq => sq.parentOptionId === parentOptionId);
+    if (filtered.length === 0) return null;
+
+    return (
+      <Box sx={{ ml: 4, mt: 1, mb: 2, pl: 2, borderLeft: '2px solid #f1f5f9' }}>
+        {filtered.map(sq => (
+          <DynamicQuestion key={sq.questionId} question={sq} />
+        ))}
+      </Box>
+    );
+  };
 
   return (
     <Box sx={{ mb: 3 }}>
@@ -71,19 +88,21 @@ const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
           };
 
           return (
-            <FormControl error={!!error} component="fieldset" variant="standard">
+            <FormControl error={!!error} component="fieldset" variant="standard" fullWidth>
               <FormGroup>
                 {options.map((opt) => (
-                  <FormControlLabel
-                    key={opt.optionId}
-                    control={
-                      <Checkbox
-                        checked={currentSelected.includes(opt.optionId)}
-                        onChange={() => handleChange(opt.optionId)}
-                      />
-                    }
-                    label={opt.content}
-                  />
+                  <Box key={opt.optionId}>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={currentSelected.includes(opt.optionId)}
+                          onChange={() => handleChange(opt.optionId)}
+                        />
+                      }
+                      label={opt.content}
+                    />
+                    {currentSelected.includes(opt.optionId) && renderSubQuestions(opt.optionId)}
+                  </Box>
                 ))}
                 {allowOther && (
                   <FormControlLabel
