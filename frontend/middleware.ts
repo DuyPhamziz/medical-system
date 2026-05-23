@@ -96,8 +96,8 @@ export function middleware(request: NextRequest) {
 		return NextResponse.redirect(new URL("/dashboard", request.url));
 	}
 
-	// ⚠️ CRITICAL: Form builder (section /dashboard/forms) is DOCTOR ONLY
-	if (pathname.startsWith("/dashboard/forms") && role !== "DOCTOR") {
+	// ⚠️ Form builder is DOCTOR or ADMIN only
+	if (pathname.startsWith("/dashboard/forms") && role !== "DOCTOR" && role !== "ADMIN") {
 		return NextResponse.redirect(new URL("/dashboard", request.url));
 	}
 

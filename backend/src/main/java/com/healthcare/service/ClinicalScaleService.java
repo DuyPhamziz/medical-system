@@ -150,7 +150,7 @@ public class ClinicalScaleService {
         int score = 0;
 
         // Sum up scores from all questions
-        if (scoringNode.get("type").asText().equals("SUM")) {
+        if (scoringNode != null && scoringNode.has("type") && scoringNode.get("type").asText().equals("SUM")) {
             JsonNode sourceQuestionsNode = scoringNode.get("sourceQuestions");
             if (sourceQuestionsNode.isArray()) {
                 for (int i = 0; i < sourceQuestionsNode.size(); i++) {

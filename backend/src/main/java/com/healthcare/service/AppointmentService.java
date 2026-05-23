@@ -60,6 +60,14 @@ public class AppointmentService {
 
     @Transactional
     public AppointmentResponse createAppointment(CreateAppointmentRequest request) {
+        // Validate time range
+        if (request.getStartTime() == null || request.getEndTime() == null) {
+            throw new IllegalArgumentException("Start time and end time are required");
+        }
+        if (!request.getStartTime().isBefore(request.getEndTime())) {
+            throw new IllegalArgumentException("Start time must be before end time");
+        }
+
         User doctor = userRepository.findById(request.getDoctorId())
                 .orElseThrow(() -> new IllegalArgumentException("Doctor not found"));
 
@@ -96,8 +104,23 @@ public class AppointmentService {
     }
 
     @Transactional
-    public void cancelAppointment(UUID appointmentId) {
-        updateStatus(appointmentId, "CANCELLED");
+    public void cancelAppointment(UUID appointmentId, UUID requestingUserId, boolean isAdmin) {
+        Appointment appointment = appointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new IllegalArgumentException("Appointment not found"));
+
+        // Only the owning patient/doctor or an admin can cancel
+        boolean isOwner = appointment.getPatient() != null
+                && appointment.getPatient().getUser() != null
+                && appointment.getPatient().getUser().getUserId().equals(requestingUserId);
+        boolean isDoctor = appointment.getDoctor() != null
+                && appointment.getDoctor().getUserId().equals(requestingUserId);
+
+        if (!isAdmin && !isOwner && !isDoctor) {
+            throw new org.springframework.security.access.AccessDeniedException("You can only cancel your own appointments");
+        }
+
+        appointment.setStatus("CANCELLED");
+        appointmentRepository.save(appointment);
     }
 
     @Transactional(readOnly = true)

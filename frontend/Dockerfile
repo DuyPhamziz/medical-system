@@ -7,6 +7,8 @@ RUN --mount=type=cache,target=/root/.npm npm ci
 
 # Rebuild the source code only when needed
 FROM node:20-alpine AS builder
+ARG NEXT_PUBLIC_API_BASE_URL=http://localhost:8080/api
+ARG NEXT_PUBLIC_BFF_BASE_URL=/api/bff
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY tsconfig.json next.config.ts postcss.config.mjs eslint.config.mjs ./
@@ -14,6 +16,8 @@ COPY public ./public
 COPY app/globals.css ./app/globals.css
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED 1
+ENV NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL}
+ENV NEXT_PUBLIC_BFF_BASE_URL=${NEXT_PUBLIC_BFF_BASE_URL}
 RUN npm run build
 
 # Production image, copy all the files and run next

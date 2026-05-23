@@ -248,11 +248,14 @@ public class FormAnswerProcessingService {
         try {
             PedigreeAnswerDTO pedigreeData = objectMapper.readValue(
                 answer.getValueJson(), PedigreeAnswerDTO.class);
-            
+
             pedigreeSyncService.syncPedigree(answer.getSession(), pedigreeData);
-            
+
         } catch (Exception e) {
-            log.error("Error processing pedigree answer: {}", e.getMessage());
+            log.error("Error processing pedigree answer for question {}: {}",
+                answer.getQuestion().getQuestionId(), e.getMessage(), e);
+            // Pedigree sync failures should not block form submission,
+            // but they must be logged at ERROR level for investigation
         }
     }
 

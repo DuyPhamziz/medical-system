@@ -48,13 +48,19 @@ public class FormCalculationEngine {
     private String replaceVariables(String formula, Map<String, Object> answerValues) {
         StringBuffer sb = new StringBuffer();
         Matcher matcher = VARIABLE_PATTERN.matcher(formula);
-        
+
         while (matcher.find()) {
             String questionId = matcher.group(1);
-            Object value = answerValues.getOrDefault(questionId, 0);
-            
-            double numValue = toDouble(value);
-            matcher.appendReplacement(sb, String.valueOf(numValue));
+            Object value = answerValues.get(questionId);
+
+            if (value == null) {
+                // Keep placeholder for missing values so the caller can detect
+                matcher.appendReplacement(sb, "0");
+                log.warn("Missing answer for question {} in formula, defaulting to 0", questionId);
+            } else {
+                double numValue = toDouble(value);
+                matcher.appendReplacement(sb, String.valueOf(numValue));
+            }
         }
         matcher.appendTail(sb);
         return sb.toString();
@@ -82,7 +88,10 @@ public class FormCalculationEngine {
         for (int i = 0; i < expression.length(); i++) {
             char ch = expression.charAt(i);
             
-            if (Character.isDigit(ch) || ch == '.') {
+            // Handle unary minus: if '-' appears at start or after '(' or another operator, it's a sign
+            if (ch == '-' && (i == 0 || expression.charAt(i - 1) == '(' || "+-*/%".indexOf(expression.charAt(i - 1)) >= 0)) {
+                current.append(ch);
+            } else if (Character.isDigit(ch) || ch == '.') {
                 current.append(ch);
             } else if (ch == '(' || ch == ')' || "+-*/%".indexOf(ch) >= 0) {
                 if (current.length() > 0) {

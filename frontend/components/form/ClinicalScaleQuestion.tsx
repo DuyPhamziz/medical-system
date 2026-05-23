@@ -34,6 +34,13 @@ export function ClinicalScaleQuestion({
     return items.map((item) => ({ itemId: item.id, score: 0 }));
   });
 
+  // Sync from external value changes (e.g., loading a saved draft)
+  useEffect(() => {
+    if (value?.items && Array.isArray(value.items) && value.items.length > 0) {
+      setScores((value.items as ScaleItemScore[]) || []);
+    }
+  }, [value?.items]);
+
   const totalScore = scores.reduce((sum, s) => sum + s.score, 0);
   const maxScore = items.length * (items[0]?.max || 3);
 

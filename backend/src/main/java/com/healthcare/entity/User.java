@@ -44,7 +44,8 @@ public class User {
     @Column(name = "org_id")
     private UUID orgId;
 
-    @Transient
-    private boolean roleLocked;
+    @Column(name = "role_locked", nullable = false)
+    @Builder.Default
+    private boolean roleLocked = false;
 
 }

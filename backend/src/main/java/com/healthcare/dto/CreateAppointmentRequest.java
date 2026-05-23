@@ -1,5 +1,7 @@
 package com.healthcare.dto;
 
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,10 +17,21 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreateAppointmentRequest {
+    @NotNull
     private UUID doctorId;
+
+    @NotNull
     private UUID patientId;
+
     private UUID roomId;
+
+    @NotNull
+    @Future
     private LocalDateTime startTime;
+
+    @NotNull
+    @Future
     private LocalDateTime endTime;
+
     private String reason;
 }

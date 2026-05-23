@@ -4,6 +4,7 @@ import com.healthcare.dto.AppointmentResponse;
 import com.healthcare.dto.CreateAppointmentRequest;
 import com.healthcare.security.SecurityUtils;
 import com.healthcare.service.AppointmentService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -60,14 +61,16 @@ public class AppointmentController {
 
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'DOCTOR', 'STAFF')")
-    public ResponseEntity<AppointmentResponse> createAppointment(@RequestBody CreateAppointmentRequest request) {
+    public ResponseEntity<AppointmentResponse> createAppointment(@Valid @RequestBody CreateAppointmentRequest request) {
         return ResponseEntity.ok(appointmentService.createAppointment(request));
     }
 
     @PostMapping("/{appointmentId}/cancel")
     @PreAuthorize("hasAnyRole('ADMIN', 'DOCTOR', 'STAFF', 'PATIENT')")
     public ResponseEntity<Void> cancelAppointment(@PathVariable UUID appointmentId) {
-        appointmentService.cancelAppointment(appointmentId);
+        UUID userId = securityUtils.getCurrentUserId();
+        boolean isAdmin = securityUtils.hasRole("ADMIN");
+        appointmentService.cancelAppointment(appointmentId, userId, isAdmin);
         return ResponseEntity.ok().build();
     }
 

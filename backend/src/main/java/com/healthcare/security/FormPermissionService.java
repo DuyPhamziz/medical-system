@@ -19,7 +19,7 @@ public class FormPermissionService {
     public User getCurrentUser() { return securityUtils.getCurrentUser(); }
     public Role getCurrentRole() { return securityUtils.getCurrentRole(); }
 
-    public boolean canView(UUID id) { return formRepository.findWithGraphByFormId(id).map(this::canView).orElse(false); }
+    public boolean canView(UUID id) { return formRepository.findById(id).map(this::canView).orElse(false); }
 
     public boolean canView(Form form) {
         if (form == null) return false;
@@ -35,7 +35,7 @@ public class FormPermissionService {
         };
     }
 
-    public boolean canEdit(UUID id) { return formRepository.findWithGraphByFormId(id).map(this::canEdit).orElse(false); }
+    public boolean canEdit(UUID id) { return formRepository.findById(id).map(this::canEdit).orElse(false); }
 
     public boolean canEdit(Form form) {
         if (form == null) return false;
@@ -66,7 +66,7 @@ public class FormPermissionService {
     public boolean canCreate() { return getCurrentRole() == Role.DOCTOR; }
     public boolean canPublish(UUID id) { return canEdit(id); }
     public boolean canDelete(UUID id) { return canEdit(id); }
-    public boolean canArchive(UUID id) { return canArchive(formRepository.findWithGraphByFormId(id).orElse(null)); }
+    public boolean canArchive(UUID id) { return canArchive(formRepository.findById(id).orElse(null)); }
 
     public boolean canArchive(Form form) {
         Role role = getCurrentRole();
@@ -75,11 +75,11 @@ public class FormPermissionService {
     }
 
     public boolean canClone(UUID id) {
-        return formRepository.findWithGraphByFormId(id).map(f -> (getCurrentRole() == Role.ADMIN || getCurrentRole() == Role.DOCTOR) && f.isTemplate()).orElse(false);
+        return formRepository.findById(id).map(f -> (getCurrentRole() == Role.ADMIN || getCurrentRole() == Role.DOCTOR) && f.isTemplate()).orElse(false);
     }
 
     public boolean canFillForm(UUID id) {
-        return formRepository.findWithGraphByFormId(id).map(f -> {
+        return formRepository.findById(id).map(f -> {
             Role r = getCurrentRole();
             if (r == Role.DOCTOR || r == Role.STAFF) return true;
             return r == Role.PATIENT && f.isPublicForm();

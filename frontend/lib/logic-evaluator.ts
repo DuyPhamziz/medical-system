@@ -5,15 +5,34 @@
 function safeEval(expression: string): any {
   let expr = expression.trim();
 
-  // Handle addition/subtraction (simple cases)
-  // This is a very basic implementation for "Year - Year"
-  const mathMatch = expr.match(/^(.+?)\s*([-+*/])\s*(.+)$/);
-  if (mathMatch && !isInsideParens(expr, mathMatch[2])) {
-    const left = safeEval(mathMatch[1]);
-    const right = safeEval(mathMatch[3]);
-    const op = mathMatch[2];
+  // Handle && first (lowest precedence among boolean operators)
+  if (!isInsideParens(expr, '&&') && expr.includes('&&')) {
+    const parts = splitTopLevel(expr, '&&');
+    return parts.every(p => Boolean(safeEval(p.trim())));
+  }
+
+  // Handle ||
+  if (!isInsideParens(expr, '||') && expr.includes('||')) {
+    const parts = splitTopLevel(expr, '||');
+    return parts.some(p => Boolean(safeEval(p.trim())));
+  }
+
+  // Handle addition/subtraction using left-to-right split
+  const addSubMatch = expr.match(/^(.+?)\s*([+-])\s*(.+)$/);
+  if (addSubMatch && !isInsideParens(expr, addSubMatch[2])) {
+    const left = safeEval(addSubMatch[1]);
+    const right = safeEval(addSubMatch[3]);
+    const op = addSubMatch[2];
     if (op === '-') return Number(left) - Number(right);
     if (op === '+') return Number(left) + Number(right);
+  }
+
+  // Handle multiplication/division using left-to-right split (same priority)
+  const mulDivMatch = expr.match(/^(.+?)\s*([*/])\s*(.+)$/);
+  if (mulDivMatch && !isInsideParens(expr, mulDivMatch[2])) {
+    const left = safeEval(mulDivMatch[1]);
+    const right = safeEval(mulDivMatch[3]);
+    const op = mulDivMatch[2];
     if (op === '*') return Number(left) * Number(right);
     if (op === '/') return Number(left) / Number(right);
   }
@@ -59,18 +78,6 @@ function safeEval(expression: string): any {
   // Handle simple NOT
   if (expr.startsWith('!')) {
     return !safeEval(expr.slice(1));
-  }
-
-  // Handle &&
-  if (!isInsideParens(expr, '&&') && expr.includes('&&')) {
-    const parts = splitTopLevel(expr, '&&');
-    return parts.every(p => Boolean(safeEval(p.trim())));
-  }
-
-  // Handle ||
-  if (!isInsideParens(expr, '||') && expr.includes('||')) {
-    const parts = splitTopLevel(expr, '||');
-    return parts.some(p => Boolean(safeEval(p.trim())));
   }
 
   // Handle parenthesized expressions

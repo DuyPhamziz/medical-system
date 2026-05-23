@@ -19,17 +19,18 @@ interface NotificationStore {
 export const useNotificationStore = create<NotificationStore>((set) => ({
   notifications: [],
   show: (notification) => {
-    const id = Math.random().toString(36).substring(2, 9);
+    const id = crypto.randomUUID();
     set((state) => ({
       notifications: [...state.notifications, { ...notification, id }],
     }));
 
     if (notification.duration !== 0) {
+      const dismissDelay = notification.duration || 5000;
       setTimeout(() => {
         set((state) => ({
           notifications: state.notifications.filter((n) => n.id !== id),
         }));
-      }, notification.duration || 5000);
+      }, dismissDelay);
     }
   },
   hide: (id) =>

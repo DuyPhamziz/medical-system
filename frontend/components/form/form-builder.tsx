@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { FormDefinition } from "@/types/form";
@@ -38,6 +38,8 @@ export function FormBuilder({ initialForm, mode, onSave, onPublish }: Props) {
 	const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
 	const [isSaving, setIsSaving] = useState(false);
 	const [lastSavedTime, setLastSavedTime] = useState<Date | null>(null);
+	const initialFormRef = useRef(initialForm);
+	const isInitialMount = useRef(true);
 
 	// Auto-save logic
 	useEffect(() => {
@@ -48,6 +50,8 @@ export function FormBuilder({ initialForm, mode, onSave, onPublish }: Props) {
 			try {
 				await onSave(form);
 				setLastSavedTime(new Date());
+				// Update ref after successful save so we don't re-sync unnecessarily
+				initialFormRef.current = form;
 			} catch (error) {
 				console.error("Auto-save failed:", error);
 			} finally {
@@ -58,12 +62,19 @@ export function FormBuilder({ initialForm, mode, onSave, onPublish }: Props) {
 		return () => clearTimeout(timer);
 	}, [form, onSave, mode]);
 
-	// Sync internal state if initialForm changes from props (after successful API save)
+	// Only sync initialForm on first mount, not on every re-render
 	useEffect(() => {
-		if (initialForm) {
+		if (isInitialMount.current) {
+			isInitialMount.current = false;
+			return;
+		}
+		// Only sync if initialForm is a genuinely new instance (different form ID)
+		// This prevents resetting unsaved changes on parent re-renders
+		if (initialForm.formId !== initialFormRef.current?.formId) {
+			initialFormRef.current = initialForm;
 			setForm(initialForm);
 		}
-	}, [initialForm, setForm]);
+	}, [initialForm?.formId, setForm]);
 
 	const toggleSection = (sectionId: string) => {
 		setExpandedSections(prev => ({
@@ -79,8 +90,8 @@ export function FormBuilder({ initialForm, mode, onSave, onPublish }: Props) {
 
 	const handleDragEnd = (event: DragEndEvent) => {
 		const { active, over } = event;
-		if (active.id !== over?.id) {
-			onReorderSections(active.id.toString(), over!.id.toString());
+		if (over && active.id !== over.id) {
+			onReorderSections(active.id.toString(), over.id.toString());
 		}
 	};
 

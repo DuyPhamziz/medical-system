@@ -30,11 +30,14 @@ public class FormLogicEngine {
      * @return true if condition matches, false otherwise
      */
     public boolean evaluateCondition(String expression, Map<String, Object> answerValues) {
+        if (expression == null || expression.isBlank()) {
+            return true;
+        }
         try {
             String evaluatedExpression = replaceVariables(expression, answerValues);
             return evaluateExpression(evaluatedExpression);
         } catch (Exception e) {
-            log.warn("Error evaluating condition: {}", expression, e);
+            log.warn("Error evaluating condition '{}': {}", expression, e.getMessage(), e);
             return false;
         }
     }
@@ -181,10 +184,25 @@ public class FormLogicEngine {
         try {
             Object leftVal = parseValue(left);
             Object rightVal = parseValue(right);
-            
+
+            // Handle null comparisons safely
+            if (leftVal == null && rightVal == null) {
+                return switch (operator) {
+                    case "==", "===" -> true;
+                    case "!=", "!==" -> false;
+                    default -> false;
+                };
+            }
+            if (leftVal == null || rightVal == null) {
+                return switch (operator) {
+                    case "!=", "!==" -> true;
+                    default -> false;
+                };
+            }
+
             return switch (operator) {
-                case "==" -> leftVal.equals(rightVal);
-                case "!=" -> !leftVal.equals(rightVal);
+                case "==", "===" -> leftVal.equals(rightVal);
+                case "!=", "!==" -> !leftVal.equals(rightVal);
                 case ">" -> compareNumbers(leftVal, rightVal) > 0;
                 case "<" -> compareNumbers(leftVal, rightVal) < 0;
                 case ">=" -> compareNumbers(leftVal, rightVal) >= 0;

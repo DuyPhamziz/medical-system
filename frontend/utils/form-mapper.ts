@@ -27,6 +27,9 @@ type FormQuestionResponse = {
   scaleMax?: number | null;
   triggerLogic?: string | null;
   configJson?: string | null;
+  parentQuestionId?: string | null;
+  parentOptionId?: string | null;
+  subQuestions?: FormQuestionResponse[];
   options?: FormOptionResponse[];
 };
 
@@ -77,7 +80,7 @@ export const mapOptionToRequest = (option: FormOption) => ({
   triggerLogic: option.triggerLogic || null,
 });
 
-export const mapQuestionToRequest = (question: FormQuestion) => {
+export const mapQuestionToRequest = (question: FormQuestion): any => {
   // Extract custom config from specific types if not already in configJson
   let configJson = (question as any).configJson;
   
@@ -107,8 +110,38 @@ export const mapQuestionToRequest = (question: FormQuestion) => {
     triggerLogic: question.triggerLogic || null,
     configJson: configJson || null,
     options: (question.options || []).map(mapOptionToRequest),
+    subQuestions: (question.subQuestions || []).map(mapQuestionToRequest),
   };
 };
+
+export const mapQuestionFromResponse = (question: FormQuestionResponse): FormQuestion => ({
+  questionId: question.questionId ?? crypto.randomUUID(),
+  content: question.content ?? "",
+  questionType: mapQuestionTypeFE(question.questionType ?? "TEXT"),
+  required: question.required ?? false,
+  allowRepeat: question.allowRepeat ?? false,
+  orderIndex: question.orderIndex ?? 0,
+  minValue: question.minValue ?? undefined,
+  maxValue: question.maxValue ?? undefined,
+  minLength: question.minLength ?? undefined,
+  maxLength: question.maxLength ?? undefined,
+  validationPattern: question.validationPattern ?? undefined,
+  validationMessage: question.validationMessage ?? undefined,
+  placeholder: question.placeholder ?? undefined,
+  helperText: question.helperText ?? undefined,
+  scaleMin: question.scaleMin ?? undefined,
+  scaleMax: question.scaleMax ?? undefined,
+  triggerLogic: question.triggerLogic ?? undefined,
+  configJson: question.configJson ?? undefined,
+  options: (question.options ?? []).map((option: FormOptionResponse) => ({
+    optionId: option.optionId ?? crypto.randomUUID(),
+    content: option.content ?? "",
+    score: option.score ?? 0,
+    orderIndex: option.orderIndex ?? 0,
+    triggerLogic: option.triggerLogic ?? undefined,
+  })),
+  subQuestions: (question.subQuestions ?? []).map(mapQuestionFromResponse),
+});
 
 export const mapSectionToRequest = (section: FormSection) => ({
   sectionId: section.sectionId,
@@ -154,32 +187,6 @@ export const mapFormFromResponse = (response: FormResponsePayload): FormDefiniti
     orderIndex: section.orderIndex ?? 0,
     allowRepeat: section.allowRepeat ?? false,
     repeatLabel: section.repeatLabel,
-    questions: (section.questions ?? []).map((question: FormQuestionResponse) => ({
-      questionId: question.questionId,
-      content: question.content ?? "",
-      questionType: mapQuestionTypeFE(question.questionType ?? "TEXT"),
-      required: question.required ?? false,
-      allowRepeat: question.allowRepeat ?? false,
-      orderIndex: question.orderIndex ?? 0,
-      minValue: question.minValue,
-      maxValue: question.maxValue,
-      minLength: question.minLength,
-      maxLength: question.maxLength,
-      validationPattern: question.validationPattern,
-      validationMessage: question.validationMessage,
-      placeholder: question.placeholder,
-      helperText: question.helperText,
-      scaleMin: question.scaleMin,
-      scaleMax: question.scaleMax,
-      triggerLogic: question.triggerLogic,
-      configJson: question.configJson,
-      options: (question.options ?? []).map((option: FormOptionResponse) => ({
-        optionId: option.optionId ?? crypto.randomUUID(),
-        content: option.content ?? "",
-        score: option.score ?? 0,
-        orderIndex: option.orderIndex ?? 0,
-        triggerLogic: option.triggerLogic,
-      })),
-    })),
+    questions: (section.questions ?? []).map(mapQuestionFromResponse),
   })),
 });

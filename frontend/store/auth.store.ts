@@ -37,22 +37,32 @@ export const useAuthStore = create<AuthState>((set) => ({
     });
   },
   hydrate: async () => {
-    const session = await getSession();
-    if (!session.authenticated || !session.user) {
+    try {
+      const session = await getSession();
+      if (!session.authenticated || !session.user) {
+        set({
+          user: null,
+          role: null,
+          isAuthenticated: false,
+          hydrated: true,
+        });
+        return;
+      }
+
+      set({
+        user: session.user,
+        role: session.user.role,
+        isAuthenticated: true,
+        hydrated: true,
+      });
+    } catch (error) {
+      console.error("Failed to hydrate auth store:", error);
       set({
         user: null,
         role: null,
         isAuthenticated: false,
-        hydrated: true,
+        hydrated: true, // Still mark hydrated so UI doesn't hang
       });
-      return;
     }
-
-    set({
-      user: session.user,
-      role: session.user.role,
-      isAuthenticated: true,
-      hydrated: true,
-    });
   },
 }));

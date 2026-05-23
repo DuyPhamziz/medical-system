@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -70,8 +71,16 @@ public class FormController {
     public Map<String, Boolean> evaluateLogic(@PathVariable UUID formId, @RequestBody(required = false) Map<String, Object> answers) {
         Map<UUID, Object> uuidAnswers = answers != null ? answers.entrySet().stream()
                 .filter(e -> !e.getKey().startsWith("sessionId") && !e.getKey().startsWith("patientId"))
+                .map(e -> {
+                    try {
+                        return Map.entry(UUID.fromString(e.getKey()), e.getValue());
+                    } catch (IllegalArgumentException ex) {
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
                 .collect(Collectors.toMap(
-                        e -> UUID.fromString(e.getKey()),
+                        Map.Entry::getKey,
                         Map.Entry::getValue
                 )) : Map.of();
         return formService.evaluateLogic(formId, uuidAnswers);
@@ -142,8 +151,16 @@ public class FormController {
     public FormStateResponse evaluateState(@PathVariable UUID formId, @RequestBody(required = false) Map<String, Object> answers) {
         // Convert string keys to UUIDs for the map
         Map<UUID, Object> uuidAnswers = answers != null ? answers.entrySet().stream()
+                .map(e -> {
+                    try {
+                        return Map.entry(UUID.fromString(e.getKey()), e.getValue());
+                    } catch (IllegalArgumentException ex) {
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
                 .collect(Collectors.toMap(
-                        e -> UUID.fromString(e.getKey()),
+                        Map.Entry::getKey,
                         Map.Entry::getValue
                 )) : Map.of();
         return formService.evaluateFormState(formId, uuidAnswers);

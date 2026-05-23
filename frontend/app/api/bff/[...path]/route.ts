@@ -59,15 +59,19 @@ async function proxy(request: NextRequest, pathSegments: string[]) {
   let backendResponse: Response;
 
   try {
+    console.log(`BFF Proxy: ${request.method} ${request.nextUrl.pathname} -> ${targetUrl}`);
     backendResponse = await send(effectiveAccessToken);
-  } catch {
+    console.log(`BFF Proxy: Backend responded with ${backendResponse.status}`);
+  } catch (err) {
+    console.error(`BFF Proxy Error:`, err);
     return NextResponse.json(
       { message: "Backend service unavailable" },
       { status: 502 },
     );
   }
 
-  if (backendResponse.status === 401 && refreshToken) {
+  // Only attempt token refresh on 401 if we haven't already rotated tokens
+  if (backendResponse.status === 401 && refreshToken && !rotatedTokens) {
     rotatedTokens = await refreshAccessToken(refreshToken);
     if (rotatedTokens?.accessToken) {
       backendResponse = await send(rotatedTokens.accessToken);

@@ -56,7 +56,16 @@ const OPERATOR_MAP: { [key in LogicOperator]: string } = {
 
 export function LogicEditor({ item, allQuestions, onChange, onClose }: Props) {
   const isSection = 'sectionId' in item;
-  
+
+  // Safe JSON parse: handles both string and already-parsed objects
+  const safeParseConfig = (raw: any): Record<string, any> => {
+    if (!raw) return {};
+    if (typeof raw === 'string') {
+      try { return JSON.parse(raw); } catch { return {}; }
+    }
+    return raw as Record<string, any>;
+  };
+
   const availableQuestions = useMemo(() => {
     if (isSection) {
       // For a section, allow any question that belongs to a PREVIOUS section.
@@ -78,7 +87,7 @@ export function LogicEditor({ item, allQuestions, onChange, onClose }: Props) {
   }, [allQuestions, item, isSection]);
 
   const [logicState, setLogicState] = useState<VisibilityLogic>(() => {
-    const config = item.configJson ? JSON.parse(item.configJson) : {};
+    const config = safeParseConfig(item.configJson);
     const rule = config.logicRules?.[0]; 
     if (rule) {
       const isShow = rule.action.toLowerCase() === 'show';
@@ -158,6 +167,15 @@ export function LogicEditor({ item, allQuestions, onChange, onClose }: Props) {
 
     if (rule.operator === 'is_empty' || rule.operator === 'not_empty') {
       condition = `{{${rule.sourceQuestionId}}} ${op} ""`;
+    } else if (rule.operator === 'contains') {
+      // contains uses .includes() function call syntax
+      const sourceQ = allQuestions.find(q => q.questionId === rule.sourceQuestionId);
+      const value = sourceQ?.questionType === 'number' ? rule.value : `"${rule.value}"`;
+      if (rule.comparisonType === 'question' && rule.targetQuestionId) {
+        condition = `{{${rule.sourceQuestionId}}}.includes({{${rule.targetQuestionId}}})`;
+      } else if (rule.value !== undefined) {
+        condition = `{{${rule.sourceQuestionId}}}.includes(${value})`;
+      }
     } else if (rule.comparisonType === 'question') {
       if (rule.targetQuestionId) {
         condition = `{{${rule.sourceQuestionId}}} ${op} {{${rule.targetQuestionId}}}`;
@@ -172,7 +190,7 @@ export function LogicEditor({ item, allQuestions, onChange, onClose }: Props) {
     
     if (condition) {
       const newConfig = {
-        ...(item.configJson ? JSON.parse(item.configJson) : {}),
+        ...safeParseConfig(item.configJson),
         logicRules: [{
           condition: condition,
           action: logicState.action.toUpperCase()

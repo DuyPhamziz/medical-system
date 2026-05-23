@@ -67,7 +67,9 @@ public class FormEngine {
                             currentAnswers.put(q.getQuestionId(), val);
                         }
                     }
-                } catch (Exception e) {}
+                } catch (Exception e) {
+                    log.warn("Error computing field for question {}: {}", q.getQuestionId(), e.getMessage());
+                }
             }
         }
         return computed;

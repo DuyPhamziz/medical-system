@@ -65,7 +65,7 @@ public class FormService {
     })
     @Transactional
     public FormResponse update(UUID formId, FormUpsertRequest request) {
-        Form form = formRepository.findWithGraphByFormId(formId)
+        Form form = formRepository.findById(formId)
                 .orElseThrow(() -> new IllegalArgumentException("Form not found"));
         formPermissionService.assertCanEdit(form);
         form.setVersion(form.getVersion() + 1);
@@ -98,7 +98,7 @@ public class FormService {
     })
     @Transactional
     public FormResponse publish(UUID id) {
-        Form f = formRepository.findWithGraphByFormId(id).orElseThrow();
+        Form f = formRepository.findById(id).orElseThrow();
         formPermissionService.assertCanPublish(f);
         f.setStatus(FormStatus.PUBLISHED);
         f.setPublishedAt(java.time.LocalDateTime.now());
@@ -112,7 +112,7 @@ public class FormService {
     })
     @Transactional
     public FormResponse archive(UUID id) {
-        Form f = formRepository.findWithGraphByFormId(id).orElseThrow();
+        Form f = formRepository.findById(id).orElseThrow();
         if (!formPermissionService.canArchive(f)) throw new IllegalArgumentException("Denied");
         f.setStatus(FormStatus.ARCHIVED);
         return formMapper.toResponse(formRepository.save(f));
@@ -124,7 +124,7 @@ public class FormService {
     })
     @Transactional
     public FormResponse unarchive(UUID id) {
-        Form f = formRepository.findWithGraphByFormId(id).orElseThrow();
+        Form f = formRepository.findById(id).orElseThrow();
         if (!formPermissionService.canArchive(f)) throw new IllegalArgumentException("Denied");
         f.setStatus(FormStatus.DRAFT);
         return formMapper.toResponse(formRepository.save(f));
@@ -147,23 +147,24 @@ public class FormService {
     @Cacheable(value = "form_details", key = "#id")
     @Transactional
     public FormResponse get(UUID id) {
-        Form f = formRepository.findWithGraphByFormId(id)
+        Form f = formRepository.findById(id)
                 .orElseThrow(() -> {
-                    // Log for debugging
-                    System.err.println("FORM NOT FOUND: id=" + id + ", user=" + (currentUser() != null ? currentUser().getEmail() : "unauthenticated"));
+                    System.err.println("FORM NOT FOUND: id=" + id);
                     return new IllegalArgumentException("Form not found with ID: " + id);
                 });
 
         try {
             formPermissionService.assertCanView(f);
         } catch (org.springframework.security.access.AccessDeniedException e) {
-            // Log permission denial for debugging
-            System.err.println("ACCESS DENIED: user=" + (currentUser() != null ? currentUser().getEmail() : "unauthenticated") +
-                             ", formId=" + id +
-                             ", formTemplate=" + f.isTemplate() +
-                             ", formOwner=" + (f.getCreatedBy() != null ? f.getCreatedBy().getEmail() : "none") +
-                             ", formStatus=" + (f.getStatus() != null ? f.getStatus().name() : "null"));
+            System.err.println("ACCESS DENIED: formId=" + id);
             throw e;
+        }
+
+        // Initialize lazy collections within transaction
+        f.getCreatedBy(); // trigger lazy load
+        f.getSections().size(); // trigger lazy load
+        for (FormSection s : f.getSections()) {
+            s.getQuestions().size();
         }
 
         return formMapper.toResponse(f);
@@ -172,7 +173,7 @@ public class FormService {
     @CacheEvict(value = {"forms_list", "form_details"}, allEntries = true)
     @Transactional
     public FormResponse cloneForm(UUID id) {
-        Form src = formRepository.findWithGraphByFormId(id).orElseThrow();
+        Form src = formRepository.findById(id).orElseThrow();
         if (!src.isTemplate()) throw new IllegalArgumentException("Not template");
         formPermissionService.assertCanView(src);
 
@@ -201,37 +202,48 @@ public class FormService {
                             .description(s.getDescription())
                             .allowRepeat(s.isAllowRepeat())
                             .repeatLabel(s.getRepeatLabel())
-                            .questions(s.getQuestions().stream().map(q -> 
-                                FormUpsertRequest.QuestionRequest.builder()
-                                        .content(q.getContent())
-                                        .questionType(q.getQuestionType())
-                                        .required(q.isRequired())
-                                        .allowRepeat(q.isAllowRepeat())
-                                        .orderIndex(q.getOrderIndex())
-                                        .minValue(q.getMinValue())
-                                        .maxValue(q.getMaxValue())
-                                        .minLength(q.getMinLength())
-                                        .maxLength(q.getMaxLength())
-                                        .validationPattern(q.getValidationPattern())
-                                        .validationMessage(q.getValidationMessage())
-                                        .placeholder(q.getPlaceholder())
-                                        .helperText(q.getHelperText())
-                                        .scaleMin(q.getScaleMin())
-                                        .scaleMax(q.getScaleMax())
-                                        .triggerLogic(q.getTriggerLogic())
-                                        .configJson(q.getConfigJson())
-                                        .options(q.getOptions().stream().map(o -> 
-                                            FormUpsertRequest.OptionRequest.builder()
-                                                    .content(o.getContent())
-                                                    .score(o.getScore())
-                                                    .orderIndex(o.getOrderIndex())
-                                                    .triggerLogic(o.getTriggerLogic())
-                                                    .build()
-                                        ).toList())
-                                        .build()
-                            ).toList())
+                            .questions(s.getQuestions().stream()
+                                    .filter(q -> q.getParentQuestion() == null && q.getParentOption() == null)
+                                    .map(this::convertQuestionToRequest)
+                                    .toList())
                             .build()
                 ).toList())
+                .build();
+    }
+
+    private FormUpsertRequest.QuestionRequest convertQuestionToRequest(FormQuestion q) {
+        return FormUpsertRequest.QuestionRequest.builder()
+                .content(q.getContent())
+                .questionType(q.getQuestionType())
+                .required(q.isRequired())
+                .allowRepeat(q.isAllowRepeat())
+                .orderIndex(q.getOrderIndex())
+                .minValue(q.getMinValue())
+                .maxValue(q.getMaxValue())
+                .minLength(q.getMinLength())
+                .maxLength(q.getMaxLength())
+                .validationPattern(q.getValidationPattern())
+                .validationMessage(q.getValidationMessage())
+                .placeholder(q.getPlaceholder())
+                .helperText(q.getHelperText())
+                .scaleMin(q.getScaleMin())
+                .scaleMax(q.getScaleMax())
+                .triggerLogic(q.getTriggerLogic())
+                .configJson(q.getConfigJson())
+                .aiConfigJson(q.getAiConfigJson())
+                .dataClassification(q.getDataClassification())
+                .isPii(q.isPii())
+                .options(q.getOptions().stream().map(o -> 
+                    FormUpsertRequest.OptionRequest.builder()
+                            .content(o.getContent())
+                            .score(o.getScore())
+                            .orderIndex(o.getOrderIndex())
+                            .triggerLogic(o.getTriggerLogic())
+                            .build()
+                ).toList())
+                .subQuestions(q.getSubQuestions().stream()
+                        .map(this::convertQuestionToRequest)
+                        .toList())
                 .build();
     }
 
@@ -242,7 +254,7 @@ public class FormService {
 
     @Transactional
     public FormStateResponse evaluateFormState(UUID id, Map<UUID, Object> answers) {
-        Form f = formRepository.findWithGraphByFormId(id).orElseThrow();
+        Form f = formRepository.findById(id).orElseThrow();
         formPermissionService.assertCanView(f);
         FormEngine.FormState s = formEngine.evaluateFormState(f, answers);
         return FormStateResponse.builder().formId(id).computedValues(s.getComputedValues()).build();
@@ -251,7 +263,7 @@ public class FormService {
     @Cacheable(value = "form_details", key = "'public_' + #formId")
     @Transactional(readOnly = true)
     public FormResponse getPublic(UUID formId) {
-        Form form = formRepository.findWithGraphByFormId(formId)
+        Form form = formRepository.findById(formId)
                 .orElseThrow(() -> new IllegalArgumentException("Form not found"));
         if (!form.isPublicForm() || form.getStatus() != FormStatus.PUBLISHED) {
             throw new IllegalArgumentException("Form is not publicly available");
@@ -263,7 +275,17 @@ public class FormService {
     @Transactional(readOnly = true)
     public List<FormListItemResponse> listMyForms() {
         User currentUser = currentUser();
-        return formRepository.findAllByCreatedBy_UserIdOrderByUpdatedAtDesc(currentUser.getUserId()).stream()
+        // Return forms owned by the user + templates accessible to the user
+        List<Form> forms = formRepository.findAllByCreatedBy_UserIdOrderByUpdatedAtDesc(currentUser.getUserId());
+        // Also include templates not owned by the user (e.g., system templates)
+        List<UUID> alreadyIncluded = forms.stream().map(Form::getFormId).toList();
+        List<Form> additionalTemplates = formRepository.findByTemplateTrueAndCreatedBy_UserIdNotOrderByUpdatedAtDesc(currentUser.getUserId())
+                .stream()
+                .filter(ft -> !alreadyIncluded.contains(ft.getFormId()))
+                .toList();
+        forms = new java.util.ArrayList<>(forms);
+        forms.addAll(additionalTemplates);
+        return forms.stream()
                 .map(formMapper::toListItem)
                 .toList();
     }
@@ -271,15 +293,15 @@ public class FormService {
     // @Cacheable(value = "forms_list", key = "'templates_' + @securityUtils.getCurrentUserId()")
     @Transactional(readOnly = true)
     public List<FormListItemResponse> listTemplates() {
-        User currentUser = currentUser();
-        return formRepository.findByTemplateTrueAndCreatedBy_UserIdOrderByUpdatedAtDesc(currentUser.getUserId()).stream()
+        // Return all templates accessible to the current user (not just user-created)
+        return formRepository.findByTemplateTrueOrderByUpdatedAtDesc().stream()
                 .map(formMapper::toListItem)
                 .toList();
     }
 
     @Transactional(readOnly = true)
     public Map<String, Boolean> evaluateLogic(UUID formId, Map<UUID, Object> answers) {
-        Form form = formRepository.findWithGraphByFormId(formId)
+        Form form = formRepository.findById(formId)
                 .orElseThrow(() -> new IllegalArgumentException("Form not found"));
         formPermissionService.assertCanView(form);
         return formLogicService.evaluateVisibility(form, answers);

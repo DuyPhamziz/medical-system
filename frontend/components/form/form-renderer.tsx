@@ -40,11 +40,13 @@ export function FormRenderer({
         title: "Thành công",
         message: "Biểu mẫu đã được gửi và lưu vào hệ thống.",
       });
-    } catch {
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Không thể kết nối với máy chủ. Vui lòng thử lại sau.";
+      console.error("Form submission error:", error);
       show({
         type: "error",
         title: "Lỗi gửi biểu mẫu",
-        message: "Không thể kết nối với máy chủ. Vui lòng thử lại sau.",
+        message,
       });
     }
   };

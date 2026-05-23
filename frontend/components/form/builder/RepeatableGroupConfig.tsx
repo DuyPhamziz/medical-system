@@ -91,7 +91,7 @@ export function RepeatableGroupConfig({ question, onChange }: Props) {
       <div className="space-y-2">
         <p className="text-[10px] font-bold text-slate-500 uppercase">Các trường con</p>
         {childFields.map((field, idx) => (
-          <div key={idx} className="flex gap-2 items-center bg-white rounded-xl p-3 border border-amber-50">
+          <div key={field.fieldId || idx} className="flex gap-2 items-center bg-white rounded-xl p-3 border border-amber-50">
             <input
               className="flex-1 rounded-lg border border-slate-100 px-3 py-1.5 text-xs font-semibold outline-none"
               placeholder="Tên trường"

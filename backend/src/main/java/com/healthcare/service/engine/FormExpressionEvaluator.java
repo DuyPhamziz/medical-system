@@ -48,16 +48,19 @@ public class FormExpressionEvaluator {
                 return evaluateFunction(processedFormula, currentAnswers);
             }
 
+            // Extract variable names BEFORE replacing references
+            String[] variables = extractVariableNames(processedFormula);
+
             // Replace {{uuid}} with variable names for expr4j
             processedFormula = replaceQuestionReferences(processedFormula);
 
             // Build and evaluate expression using expr4j
             Expression expression = new ExpressionBuilder(processedFormula)
-                    .variables(extractVariableNames(processedFormula))
+                    .variables(variables)
                     .build();
 
             // Set variable values
-            for (String var : extractVariableNames(processedFormula)) {
+            for (String var : variables) {
                 Object value = currentAnswers.get(UUID.fromString(var));
                 if (value != null) {
                     expression.setVariable(var, toDouble(value));

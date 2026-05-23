@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { FormQuestion } from "@/types/form";
@@ -46,6 +46,17 @@ export function RepeatableGroupQuestion({
     }
     return [createEmptyInstance(childFields)];
   });
+
+  // Sync state from external prop changes (e.g., loading a saved draft)
+  const prevValueRef = useRef(value);
+  useEffect(() => {
+    if (Array.isArray(value) && value !== prevValueRef.current) {
+      prevValueRef.current = value;
+      if (value.length > 0 && JSON.stringify(value) !== JSON.stringify(instances)) {
+        setInstances(value);
+      }
+    }
+  }, [value, instances]);
 
   function createEmptyInstance(fields: ChildField[]): Record<string, unknown> {
     const instance: Record<string, unknown> = {};

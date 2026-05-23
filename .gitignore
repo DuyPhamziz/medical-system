@@ -51,7 +51,10 @@ build/
 # *.sql
 *.dump
 *.backup
-
+form_blueprint.json
+full_sheet_data.json
+analyze_sheet.py
+generate_blueprint.py
 # =====================
 # Logs
 # =====================

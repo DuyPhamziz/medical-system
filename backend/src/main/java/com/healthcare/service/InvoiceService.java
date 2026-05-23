@@ -65,14 +65,16 @@ public class InvoiceService {
             com.healthcare.entity.Service service = serviceRepository.findById(item.getServiceId())
                     .orElseThrow(() -> new IllegalArgumentException("Service not found: " + item.getServiceId()));
 
-            BigDecimal lineTotal = item.getUnitPrice().multiply(BigDecimal.valueOf(item.getQuantity()));
+            // Use DB price, only fall back to client price if DB price is null
+            BigDecimal unitPrice = service.getPrice() != null ? service.getPrice() : item.getUnitPrice();
+            BigDecimal lineTotal = unitPrice.multiply(BigDecimal.valueOf(item.getQuantity()));
             total = total.add(lineTotal);
 
             InvoiceDetail detail = InvoiceDetail.builder()
                     .invoice(savedInvoice)
                     .service(service)
                     .quantity(item.getQuantity())
-                    .unitPrice(item.getUnitPrice())
+                    .unitPrice(unitPrice)
                     .build();
             details.add(detail);
         }

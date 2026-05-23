@@ -3,7 +3,7 @@ import { useForm, FormProvider } from 'react-hook-form';
 import { Box, Button, Container, LinearProgress, Stack, Typography, Alert, Card } from '@mui/material';
 import { DynamicQuestion } from './DynamicQuestion';
 import { FormQuestion, FormSection } from '@/types/form';
-import axios from 'axios';
+import apiClient from '@/lib/axios';
 import { useNotificationStore } from '@/store/notification.store';
 
 interface FormFillerProps {
@@ -122,7 +122,7 @@ export const FormFiller: React.FC<FormFillerProps> = ({
       });
 
       // Post to backend
-      const response = await axios.post(`/api/forms/${form.formId}/submit`, {
+      const response = await apiClient.post(`/api/forms/${form.formId}/submit`, {
         answers,
       });
 

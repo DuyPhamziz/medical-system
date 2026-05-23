@@ -52,14 +52,25 @@ services:
   frontend:
     build:
       context: ./frontend
+      args:
+        NEXT_PUBLIC_API_BASE_URL: http://backend:8080/api
+        NEXT_PUBLIC_BFF_BASE_URL: /api/bff
     ports:
       - "3000:3000"
     environment:
-      NEXT_PUBLIC_API_BASE_URL: http://backend:8080/api
-      NEXT_PUBLIC_BFF_BASE_URL: /api/bff
+      # NOTE: NEXT_PUBLIC_* vars are inlined at BUILD time in Next.js standalone output.
+      # The build args above are used during build. Runtime env vars here
+      # are for server-side only (not client-side browser code).
+      NODE_ENV: production
     depends_on:
       - backend
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
     deploy:
       resources:
         limits:

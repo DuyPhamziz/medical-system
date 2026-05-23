@@ -30,6 +30,11 @@ public interface FormRepository extends JpaRepository<Form, UUID> {
     @Query("SELECT f FROM Form f JOIN FETCH f.createdBy WHERE f.template = true AND f.createdBy.userId = :userId ORDER BY f.updatedAt DESC")
     List<Form> findByTemplateTrueAndCreatedBy_UserIdOrderByUpdatedAtDesc(@Param("userId") UUID userId);
 
-    @org.springframework.data.jpa.repository.EntityGraph(value = "Form.fullStructure", type = org.springframework.data.jpa.repository.EntityGraph.EntityGraphType.LOAD)
-    java.util.Optional<Form> findWithGraphByFormId(UUID formId);
+    // Find templates NOT owned by a specific user (e.g., system templates accessible to all doctors)
+    @Query("SELECT f FROM Form f JOIN FETCH f.createdBy WHERE f.template = true AND f.createdBy.userId != :userId ORDER BY f.updatedAt DESC")
+    List<Form> findByTemplateTrueAndCreatedBy_UserIdNotOrderByUpdatedAtDesc(@Param("userId") UUID userId);
+
+    // Find ALL templates (for listing accessible templates)
+    @Query("SELECT f FROM Form f JOIN FETCH f.createdBy WHERE f.template = true ORDER BY f.updatedAt DESC")
+    List<Form> findByTemplateTrueOrderByUpdatedAtDesc();
 }

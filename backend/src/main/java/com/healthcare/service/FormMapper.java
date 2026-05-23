@@ -50,7 +50,10 @@ public class FormMapper {
                 .orderIndex(s.getOrderIndex())
                 .allowRepeat(s.isAllowRepeat())
                 .repeatLabel(s.getRepeatLabel())
-                .questions(s.getQuestions().stream().map(this::toQuestionResponse).toList())
+                .questions(s.getQuestions().stream()
+                        .filter(q -> q.getParentQuestion() == null && q.getParentOption() == null)
+                        .map(this::toQuestionResponse)
+                        .toList())
                 .build();
     }
 
@@ -79,7 +82,9 @@ public class FormMapper {
                 .isPii(q.isPii())
                 .parentQuestionId(q.getParentQuestion() != null ? q.getParentQuestion().getQuestionId() : null)
                 .parentOptionId(q.getParentOption() != null ? q.getParentOption().getOptionId() : null)
-                .subQuestions(q.getSubQuestions() != null ? q.getSubQuestions().stream().map(this::toQuestionResponse).toList() : new ArrayList<>())
+                .subQuestions(q.getSubQuestions() != null ? q.getSubQuestions().stream()
+                        .map(this::toQuestionResponse)
+                        .toList() : new ArrayList<>())
                 .scaleId(q.getClinicalScale() != null ? q.getClinicalScale().getScaleId() : null)
                 .options(q.getOptions().stream().map(this::toOptionResponse).toList())
                 .build();

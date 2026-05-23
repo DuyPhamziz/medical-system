@@ -312,11 +312,31 @@ export const QuestionSwitcher = React.memo(function QuestionSwitcher({ question,
 
     case "file_upload":
       return (
-        <Input
-          className="rounded-xl border-slate-100 bg-white font-bold"
-          type="file"
-          placeholder={question.placeholder || "Chọn tệp..."}
-        />
+        <div>
+          <Input
+            className="rounded-xl border-slate-100 bg-white font-bold"
+            type="file"
+            placeholder={question.placeholder || "Chọn tệp..."}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              const file = e.target.files?.[0];
+              if (file) {
+                onChange(
+                  question.questionId as string,
+                  0,
+                  "file",
+                  { name: file.name, size: file.size, type: file.type }
+                );
+              }
+            }}
+          />
+          {val.valueJson ? (
+            <p className="mt-1 text-xs text-slate-500">
+              {typeof val.valueJson === "string"
+                ? (() => { try { return JSON.parse(val.valueJson).name || val.valueJson; } catch { return val.valueJson; } })()
+                : (val.valueJson as { name?: string })?.name || "Đã chọn tệp"}
+            </p>
+          ) : null}
+        </div>
       );
 
     case "body_map":

@@ -9,6 +9,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Component
 public class SecurityUtils {
@@ -21,17 +22,17 @@ public class SecurityUtils {
     public User getCurrentUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || auth.getPrincipal() == null) return null;
-        
+
         Object principal = auth.getPrincipal();
         if (principal instanceof User) return (User) principal;
-        
+
         String email = auth.getName();
         if (email == null || email.isEmpty() || email.equals("anonymousUser")) return null;
-        
+
         return userRepository.findByEmail(email).orElse(null);
     }
 
-    public java.util.UUID getCurrentUserId() {
+    public UUID getCurrentUserId() {
         User user = getCurrentUser();
         return user != null ? user.getUserId() : null;
     }
@@ -51,5 +52,33 @@ public class SecurityUtils {
             }
         }
         return null;
+    }
+
+    /**
+     * Check if the current authenticated user has a specific role.
+     * @param roleName role name without ROLE_ prefix (e.g., "ADMIN", "DOCTOR")
+     */
+    public boolean hasRole(String roleName) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null) return false;
+        String targetAuthority = "ROLE_" + roleName.toUpperCase();
+        return auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equalsIgnoreCase(targetAuthority));
+    }
+
+    /**
+     * Check if the current authenticated user has any of the given roles.
+     */
+    public boolean hasAnyRole(String... roleNames) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null) return false;
+        return auth.getAuthorities().stream()
+                .anyMatch(a -> {
+                    String authority = a.getAuthority().replace("ROLE_", "");
+                    for (String role : roleNames) {
+                        if (role.equalsIgnoreCase(authority)) return true;
+                    }
+                    return false;
+                });
     }
 }

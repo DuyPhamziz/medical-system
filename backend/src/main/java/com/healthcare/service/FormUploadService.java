@@ -39,8 +39,8 @@ public class FormUploadService {
     @Value("${upload.url-base:http://localhost:8080/api/uploads}")
     private String urlBase;
 
-    // In-memory cache for presigned URLs (in production, use distributed cache like Redis)
-    private static final Map<String, PresignedUrlData> presignedUrlCache = new HashMap<>();
+    // Thread-safe cache for presigned URLs (in production, use distributed cache like Redis)
+    private static final Map<String, PresignedUrlData> presignedUrlCache = new java.util.concurrent.ConcurrentHashMap<>();
 
     private static final long PRESIGNED_URL_EXPIRY_MINUTES = 15;
 
@@ -174,7 +174,9 @@ public class FormUploadService {
     }
 
     private String generateChecksum(String fileName) {
-        // Generate SHA-256 checksum based on filename and timestamp
+        // Generate checksum based on filename + timestamp for upload session tracking
+        // Note: this is a session identifier, not a file integrity hash;
+        // actual file integrity should be verified after upload completes
         return DigestUtils.sha256Hex(fileName + System.nanoTime());
     }
 }

@@ -45,9 +45,18 @@ public class VisitController {
     // ============================================================
 
     @GetMapping("/api/visits/{visitId}")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyRole('ADMIN', 'DOCTOR', 'STAFF', 'PATIENT')")
     public ResponseEntity<VisitResponse> getVisit(@PathVariable UUID visitId) {
-        return ResponseEntity.ok(visitService.getVisit(visitId));
+        VisitResponse visit = visitService.getVisit(visitId);
+        // Verify access: patient only their own visit
+        if (securityUtils.hasRole("PATIENT")
+                && !securityUtils.hasAnyRole("ADMIN", "DOCTOR", "STAFF")) {
+            UUID currentUserId = securityUtils.getCurrentUserId();
+            if (visit.getPatientId() != null && !visit.getPatientId().equals(currentUserId)) {
+                throw new org.springframework.security.access.AccessDeniedException("Access denied to this visit");
+            }
+        }
+        return ResponseEntity.ok(visit);
     }
 
     @PutMapping("/api/visits/{visitId}")

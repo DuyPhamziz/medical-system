@@ -1,5 +1,8 @@
 package com.healthcare.dto;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,8 +20,12 @@ import java.util.UUID;
 @AllArgsConstructor
 public class CreateInvoiceRequest {
 
+    @NotNull
     private UUID visitId;
 
+    @NotNull
+    @NotEmpty
+    @Valid
     private List<InvoiceItem> items;
 
     @Getter
@@ -27,8 +34,12 @@ public class CreateInvoiceRequest {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class InvoiceItem {
+        @NotNull
         private UUID serviceId;
+
+        @NotNull
         private Integer quantity;
+
         private BigDecimal unitPrice;
     }
 }
