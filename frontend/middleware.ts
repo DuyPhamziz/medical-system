@@ -42,6 +42,10 @@ function resolveAllowedRoles(pathname: string): Role[] | null {
 		return ["DOCTOR"];
 	}
 
+	if (pathname.startsWith("/dashboard/patients")) {
+		return ["ADMIN", "DOCTOR", "STAFF"];
+	}
+
 	if (pathname.startsWith("/dashboard/clinics")) {
 		return DASHBOARD_ROLE_GUARD["/dashboard/clinics"];
 	}
@@ -66,7 +70,7 @@ function resolveAllowedRoles(pathname: string): Role[] | null {
 		return DASHBOARD_ROLE_GUARD["/dashboard/doctor"];
 	}
 
-	if (pathname.startsWith("/dashboard/patient")) {
+	if (pathname === "/dashboard/patient" || pathname.startsWith("/dashboard/patient/")) {
 		return DASHBOARD_ROLE_GUARD["/dashboard/patient"];
 	}
 

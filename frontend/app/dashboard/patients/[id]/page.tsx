@@ -1,20 +1,79 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { getPatientDashboard } from "@/services/patient.api";
+import { listPatientProfiles, updatePatientProfileByDoctor } from "@/services/patient-profile.api";
 import { PatientResponse, PatientFormResponse, VisitResponse, VitalSignsResponse } from "@/types/patient";
+import { PatientProfile, PatientProfileRequest } from "@/types/patient-profile";
+
+const emptyProfileForm: PatientProfileRequest = {
+	hoTen: "",
+	ngaySinh: "",
+	gioiTinh: "",
+	danToc: "",
+	quocTich: "",
+	soDienThoaiCaNhan: "",
+	email: "",
+	diaChiHienTai: "",
+	hoTenNguoiLienHe: "",
+	moiQuanHe: "",
+	soDienThoaiNguoiLienHe: "",
+	ngheNghiep: "",
+	noiLamViec: "",
+};
+
+const normalizeGender = (value?: string | null): PatientProfileRequest["gioiTinh"] => {
+	if (value === "Nam" || value === "Nu" || value === "Khac") {
+		return value;
+	}
+
+	return "";
+};
+
+const toProfileForm = (profile: PatientProfile | null, patient: PatientResponse | null): PatientProfileRequest => ({
+	...emptyProfileForm,
+	hoTen: profile?.hoTen ?? patient?.fullName ?? "",
+	ngaySinh: profile?.ngaySinh ?? patient?.dateOfBirth ?? "",
+	gioiTinh: normalizeGender(profile?.gioiTinh ?? patient?.gender),
+	danToc: profile?.danToc ?? "",
+	quocTich: profile?.quocTich ?? "",
+	soDienThoaiCaNhan: profile?.soDienThoaiCaNhan ?? patient?.phoneNumber ?? "",
+	email: profile?.email ?? patient?.email ?? "",
+	diaChiHienTai: profile?.diaChiHienTai ?? patient?.address ?? "",
+	hoTenNguoiLienHe: profile?.hoTenNguoiLienHe ?? patient?.emergencyContactName ?? "",
+	moiQuanHe: profile?.moiQuanHe ?? "",
+	soDienThoaiNguoiLienHe: profile?.soDienThoaiNguoiLienHe ?? patient?.emergencyContactPhone ?? "",
+	ngheNghiep: profile?.ngheNghiep ?? patient?.occupation ?? "",
+	noiLamViec: profile?.noiLamViec ?? "",
+});
 
 export default function PatientDetailPage() {
 	const params = useParams<{ id: string }>();
 	const router = useRouter();
+	const searchParams = useSearchParams();
+	const tabParam = searchParams.get("tab");
 	const [patient, setPatient] = useState<PatientResponse | null>(null);
+	const [profile, setProfile] = useState<PatientProfile | null>(null);
+	const [profileId, setProfileId] = useState<string | null>(null);
+	const [profileForm, setProfileForm] = useState<PatientProfileRequest>(emptyProfileForm);
+	const [profileMessage, setProfileMessage] = useState("");
+	const [profileSaving, setProfileSaving] = useState(false);
 	const [forms, setForms] = useState<PatientFormResponse[]>([]);
 	const [visits, setVisits] = useState<VisitResponse[]>([]);
 	const [vitals, setVitals] = useState<VitalSignsResponse[]>([]);
 	const [loading, setLoading] = useState(true);
-	const [activeTab, setActiveTab] = useState<"timeline" | "forms" | "stats" | "admin">("timeline");
+	const [activeTab, setActiveTab] = useState<"timeline" | "forms" | "stats" | "admin" | "profile">(
+		tabParam === "forms" ? "forms" : tabParam === "stats" ? "stats" : tabParam === "admin" ? "admin" : tabParam === "profile" ? "profile" : "timeline"
+	);
+
+	useEffect(() => {
+		if (tabParam === "forms" || tabParam === "stats" || tabParam === "admin" || tabParam === "timeline" || tabParam === "profile") {
+			setActiveTab(tabParam);
+		}
+	}, [tabParam]);
 
 	useEffect(() => {
 		const load = async () => {
@@ -25,14 +84,65 @@ export default function PatientDetailPage() {
 				setForms(dashboardData.recentForms);
 				setVisits(dashboardData.recentVisits);
 				setVitals(dashboardData.vitalSignsHistory);
+
+				const profiles = await listPatientProfiles();
+				const matchedProfile = dashboardData.patientInfo.email
+					? profiles.find((item) => item.email?.toLowerCase() === dashboardData.patientInfo.email?.toLowerCase()) ?? null
+					: null;
+
+				setProfile(matchedProfile);
+				setProfileId(matchedProfile?.maBenhNhan ?? params.id);
+				setProfileForm(toProfileForm(matchedProfile, dashboardData.patientInfo));
 			} catch (err) {
 				console.error(err);
+				setPatient(null);
+				setProfile(null);
 			} finally {
 				setLoading(false);
 			}
 		};
 		void load();
 	}, [params.id]);
+
+	const profileErrors = useMemo(() => {
+		const next: Record<string, string> = {};
+		if (!profileForm.hoTen.trim()) next.hoTen = "Họ tên là bắt buộc";
+		if (!profileForm.ngaySinh) next.ngaySinh = "Ngày sinh là bắt buộc";
+		if (!profileForm.soDienThoaiCaNhan.trim()) next.soDienThoaiCaNhan = "Số điện thoại cá nhân là bắt buộc";
+		if (!profileForm.soDienThoaiNguoiLienHe.trim()) next.soDienThoaiNguoiLienHe = "Số điện thoại người liên hệ là bắt buộc";
+		return next;
+	}, [profileForm]);
+
+	const updateProfileField = (key: keyof PatientProfileRequest, value: string) => {
+		setProfileForm((prev) => ({ ...prev, [key]: value }));
+	};
+
+	const saveProfile = async (event: React.FormEvent<HTMLFormElement>) => {
+		event.preventDefault();
+		if (Object.keys(profileErrors).length > 0) {
+			return;
+		}
+
+		setProfileSaving(true);
+		setProfileMessage("");
+		try {
+			await updatePatientProfileByDoctor(profileId ?? params.id, profileForm);
+			setProfileMessage("Cập nhật hồ sơ bệnh nhân thành công.");
+
+			const refreshedProfiles = await listPatientProfiles();
+			const refreshedProfile = patient?.email
+				? refreshedProfiles.find((item) => item.email?.toLowerCase() === patient.email?.toLowerCase()) ?? null
+				: null;
+
+			setProfile(refreshedProfile);
+			setProfileId(refreshedProfile?.maBenhNhan ?? profileId ?? params.id);
+			setProfileForm(toProfileForm(refreshedProfile, patient));
+		} catch {
+			setProfileMessage("Cập nhật hồ sơ bệnh nhân thất bại.");
+		} finally {
+			setProfileSaving(false);
+		}
+	};
 
 	if (loading) return <div className="p-10 text-center font-bold text-slate-400 animate-pulse">Đang tải hồ sơ bệnh nhân...</div>;
 	if (!patient) return <div className="p-10 text-center text-rose-600 font-bold">Không tìm thấy thông tin bệnh nhân.</div>;
@@ -117,6 +227,12 @@ export default function PatientDetailPage() {
 							Biểu mẫu y khoa ({forms.length})
 						</button>
 						<button 
+							onClick={() => setActiveTab("profile")}
+							className={`flex-1 min-w-[120px] rounded-xl py-2.5 text-sm font-bold transition-all ${activeTab === "profile" ? "bg-white text-emerald-700 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
+						>
+							Hồ sơ bệnh nhân
+						</button>
+						<button 
 							onClick={() => setActiveTab("stats")}
 							className={`flex-1 min-w-[120px] rounded-xl py-2.5 text-sm font-bold transition-all ${activeTab === "stats" ? "bg-white text-emerald-700 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
 						>
@@ -181,6 +297,63 @@ export default function PatientDetailPage() {
 									<p className="font-bold text-slate-400">Bệnh nhân chưa thực hiện biểu mẫu nào.</p>
 								</div>
 							)}
+						</div>
+					)}
+
+					{activeTab === "profile" && (
+						<div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+							<div className="flex items-center justify-between gap-4 border-b border-slate-100 pb-4">
+								<div>
+									<h3 className="text-lg font-bold text-slate-900">Hồ sơ bệnh nhân</h3>
+									<p className="mt-1 text-sm text-slate-500">Xem và cập nhật thông tin hồ sơ trực tiếp tại đây.</p>
+								</div>
+								{profile ? (
+									<span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700">Đã có hồ sơ</span>
+								) : (
+									<span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700">Chưa có hồ sơ riêng</span>
+								)}
+							</div>
+
+							{profileMessage ? (
+								<p className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">{profileMessage}</p>
+							) : null}
+
+							<form onSubmit={saveProfile} className="mt-6 grid gap-4 md:grid-cols-2">
+								<Input label="Họ và tên *" name="hoTen" value={profileForm.hoTen} onChange={(e) => updateProfileField("hoTen", e.target.value)} error={profileErrors.hoTen} />
+								<Input label="Ngày sinh *" name="ngaySinh" type="date" value={profileForm.ngaySinh} onChange={(e) => updateProfileField("ngaySinh", e.target.value)} error={profileErrors.ngaySinh} />
+
+								<label className="flex w-full flex-col gap-2 text-sm font-medium text-slate-700">
+									<span>Giới tính</span>
+									<select
+										name="gioiTinh"
+										className="h-11 rounded-xl border border-slate-300 bg-white px-3 text-slate-900 outline-none ring-cyan-200 transition focus:border-cyan-500 focus:ring-2"
+										value={profileForm.gioiTinh ?? ""}
+										onChange={(e) => updateProfileField("gioiTinh", e.target.value)}
+									>
+										<option value="">Chọn giới tính</option>
+										<option value="Nam">Nam</option>
+										<option value="Nu">Nữ</option>
+										<option value="Khac">Khác</option>
+									</select>
+								</label>
+
+								<Input label="Dân tộc" name="danToc" value={profileForm.danToc ?? ""} onChange={(e) => updateProfileField("danToc", e.target.value)} />
+								<Input label="Quốc tịch" name="quocTich" value={profileForm.quocTich ?? ""} onChange={(e) => updateProfileField("quocTich", e.target.value)} />
+								<Input label="Số điện thoại cá nhân *" name="soDienThoaiCaNhan" value={profileForm.soDienThoaiCaNhan} onChange={(e) => updateProfileField("soDienThoaiCaNhan", e.target.value)} error={profileErrors.soDienThoaiCaNhan} />
+								<Input label="Email" name="email" type="email" value={profileForm.email ?? ""} onChange={(e) => updateProfileField("email", e.target.value)} />
+								<Input label="Địa chỉ hiện tại" name="diaChiHienTai" value={profileForm.diaChiHienTai ?? ""} onChange={(e) => updateProfileField("diaChiHienTai", e.target.value)} />
+								<Input label="Họ tên người liên hệ" name="hoTenNguoiLienHe" value={profileForm.hoTenNguoiLienHe ?? ""} onChange={(e) => updateProfileField("hoTenNguoiLienHe", e.target.value)} />
+								<Input label="Mối quan hệ" name="moiQuanHe" value={profileForm.moiQuanHe ?? ""} onChange={(e) => updateProfileField("moiQuanHe", e.target.value)} />
+								<Input label="Số điện thoại người liên hệ *" name="soDienThoaiNguoiLienHe" value={profileForm.soDienThoaiNguoiLienHe} onChange={(e) => updateProfileField("soDienThoaiNguoiLienHe", e.target.value)} error={profileErrors.soDienThoaiNguoiLienHe} />
+								<Input label="Nghề nghiệp" name="ngheNghiep" value={profileForm.ngheNghiep ?? ""} onChange={(e) => updateProfileField("ngheNghiep", e.target.value)} />
+								<Input label="Nơi làm việc" name="noiLamViec" value={profileForm.noiLamViec ?? ""} onChange={(e) => updateProfileField("noiLamViec", e.target.value)} />
+
+								<div className="md:col-span-2 flex items-center justify-end gap-2">
+									<Button type="submit" disabled={profileSaving || Object.keys(profileErrors).length > 0}>
+										{profileSaving ? "Đang cập nhật..." : "Cập nhật hồ sơ"}
+									</Button>
+								</div>
+							</form>
 						</div>
 					)}
 

@@ -140,7 +140,6 @@ public class AuthService {
         // If it's a patient, create a patient profile
         if (role == Role.PATIENT) {
             com.healthcare.entity.Patient patient = new com.healthcare.entity.Patient();
-            patient.setPatientId(UUID.randomUUID());
             patient.setFullName(username);
             patient.setUser(savedUser);
             patient.setCreatedAt(LocalDateTime.now());

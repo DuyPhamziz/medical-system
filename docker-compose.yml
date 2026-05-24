@@ -4,7 +4,7 @@ services:
     environment:
       POSTGRES_DB: med_db
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: hp12345
+      POSTGRES_PASSWORD: tuhoang7444
     ports:
       - "5432:5432"
     volumes:

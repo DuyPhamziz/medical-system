@@ -88,7 +88,7 @@ export default function PatientDashboardPage() {
 						<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-indigo-600"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
 					</div>
 					<p className="text-lg font-bold text-slate-700">Chưa có hồ sơ bệnh nhân</p>
-					<p className="mt-2 text-sm text-slate-500">Vui lòng liên hệ phòng khám để được tạo hồ sơ.</p>
+					<p className="mt-2 text-sm text-slate-500">Vui lòng liên hệ phòng khám để được cập nhật hồ sơ.</p>
 				</div>
 			) : (
 				<>

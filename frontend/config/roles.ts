@@ -26,6 +26,7 @@ export const ROLE_MENU: Record<Role, Array<{ label: string; href: string }>> = {
 	],
 	PATIENT: [
 		{ label: "Trang chủ", href: "/dashboard/patient" },
+		{ label: "Hồ sơ của tôi", href: "/dashboard/patient/profile" },
 	],
 	STAFF: [
 		{ label: "Hàng chờ", href: "/dashboard/queue" },
